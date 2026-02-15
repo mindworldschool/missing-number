@@ -160,16 +160,11 @@ function createBlockCard({
   allLabel,
   additionLabel,
   subtractionLabel,
-  t  // ✅ ИСПРАВЛЕНИЕ 1: добавлен параметр t
+  t
 }) {
-  console.log(`🔍 [createBlockCard] Создание карточки "${key}"`);
-  console.log(`🔍 [createBlockCard] stateBlock.digits:`, stateBlock.digits);
-  console.log(`🔍 [createBlockCard] available digits:`, digits);
-  
- // === СТАЛО ===
-const card = document.createElement("div");
-card.className = "block-card";
-card.dataset.block = key;  // 🔥 НОВОЕ: для селектора
+  const card = document.createElement("div");
+  card.className = "block-card";
+  card.dataset.block = key;
 
   const header = document.createElement("div");
   header.className = "block-card__header";
@@ -196,65 +191,19 @@ card.dataset.block = key;  // 🔥 НОВОЕ: для селектора
     label.append(input, text);
     label.classList.toggle("digit-chip--active", input.checked);
 
-   // === СТАЛО ===
-input.addEventListener("change", () => {
-  label.classList.toggle("digit-chip--active", input.checked);
-  const current = new Set(state.settings.blocks[key].digits);
-  if (input.checked) current.add(digit);
-  else current.delete(digit);
-  const nextDigits = Array.from(current).sort((a, b) => {
-    const orderA = orderMap.get(a) ?? 0;
-    const orderB = orderMap.get(b) ?? 0;
-    return orderA - orderB;
-  });
-  onUpdate({ digits: nextDigits });
-  updateAllToggle();
-  
-  // 🔥 АВТОВЫДЕЛЕНИЕ "Просто" при работе с блоком "Братья"
-  if (key === "brothers") {
-    // Проверяем: есть ли хоть одна выбранная цифра в "Братья"?
-    const brothersHasDigits = nextDigits.length > 0;
-    
-    console.log("🔄 Блок Братья изменен. Выбрано цифр:", nextDigits.length);
-    console.log("🔄 Текущие цифры в Просто:", state.settings.blocks.simple.digits);
-    
-    if (brothersHasDigits) {
-      console.log("✅ Автовыделение всех цифр 1-9 в блоке 'Просто'");
-      
-      // ✅ Сохраняем в state через updateSettings
-      updateSettings({
-        blocks: {
-          ...state.settings.blocks,
-          simple: {
-            ...state.settings.blocks.simple,
-            digits: ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-          }
-        }
+    input.addEventListener("change", () => {
+      label.classList.toggle("digit-chip--active", input.checked);
+      const current = new Set(state.settings.blocks[key].digits);
+      if (input.checked) current.add(digit);
+      else current.delete(digit);
+      const nextDigits = Array.from(current).sort((a, b) => {
+        const orderA = orderMap.get(a) ?? 0;
+        const orderB = orderMap.get(b) ?? 0;
+        return orderA - orderB;
       });
-      
-      // ✅ Обновляем UI с небольшой задержкой для гарантии
-      setTimeout(() => {
-        const simpleCard = document.querySelector('.block-card[data-block="simple"]');
-        if (simpleCard) {
-          // Активируем все чипы
-          simpleCard.querySelectorAll('.digit-chip input').forEach(inp => {
-            inp.checked = true;
-            inp.closest('.digit-chip').classList.add('digit-chip--active');
-          });
-          
-          // Активируем галочку "Все"
-          const allToggle = simpleCard.querySelector('.settings-checkbox--pill input');
-          if (allToggle) {
-            allToggle.checked = true;
-            allToggle.closest('.settings-checkbox').classList.add('is-active');
-          }
-          
-          console.log("✅ UI блока 'Просто' обновлен");
-        }
-      }, 50);
-    }
-  }
-});
+      onUpdate({ digits: nextDigits });
+      updateAllToggle();
+    });
 
     digitWrap.appendChild(label);
     return { input, label, digit };
@@ -279,11 +228,7 @@ input.addEventListener("change", () => {
     const activeCount = digitInputs.filter(({ input }) => input.checked).length;
     const input = allToggle.querySelector("input");
     const isAllSelected = activeCount === digits.length && digits.length > 0;
-    
-    if (key === "simple" || key === "brothers") {
-      console.log(`🔍 [${key}] updateAllToggle: активно ${activeCount} из ${digits.length}`);
-    }
-    
+
     input.checked = isAllSelected;
     allToggle.classList.toggle("is-active", isAllSelected);
   }
@@ -302,7 +247,6 @@ input.addEventListener("change", () => {
       additionLabel,
       stateBlock.onlyAddition,
       (checked) => {
-        console.log(`🔍 [${key}] Только сложение:`, checked);
         onUpdate({ onlyAddition: checked });
       },
       "settings-checkbox settings-checkbox--outline"
@@ -312,7 +256,6 @@ input.addEventListener("change", () => {
       subtractionLabel,
       stateBlock.onlySubtraction,
       (checked) => {
-        console.log(`🔍 [${key}] Только вычитание:`, checked);
         onUpdate({ onlySubtraction: checked });
       },
       "settings-checkbox settings-checkbox--outline"
@@ -338,7 +281,6 @@ export function renderSettings(container, { t, state, updateSettings, navigate }
   heading.textContent = t("settings.title");
   paragraph.textContent = t("settings.description");
 
-  // ✅ СИНХРОНИЗАЦИЯ: Если "Братья" активны, в "Просто" должны быть все цифры 1-9
   const settingsState = state.settings || {
     mode: "mental",
     digits: "1",
@@ -349,10 +291,7 @@ export function renderSettings(container, { t, state, updateSettings, navigate }
     speed: "none",
     toggles: {},
     blocks: {
-      simple: { digits: ["1", "2", "3", "4"], onlyAddition: false, onlySubtraction: false },
-      brothers: { digits: [], onlyAddition: false, onlySubtraction: false },
-      friends: { digits: [], onlyAddition: false, onlySubtraction: false },
-      mix: { digits: [], onlyAddition: false, onlySubtraction: false }
+      simple: { digits: ["1", "2", "3", "4"], onlyAddition: false, onlySubtraction: false }
     },
     transition: "none",
     inline: false,
@@ -360,45 +299,6 @@ export function renderSettings(container, { t, state, updateSettings, navigate }
     actionsCount: 2,
     unknownPosition: 'random'
   };
-  
-  console.log("🔍 [settings] Проверка синхронизации блоков при рендере");
-  console.log("🔍 [settings] Братья digits:", settingsState.blocks?.brothers?.digits || []);
-  console.log("🔍 [settings] Просто digits:", settingsState.blocks?.simple?.digits || []);
-
-  const brothersSelected = (settingsState.blocks?.brothers?.digits || []).length > 0;
-  
-  if (brothersSelected) {
-    console.log("👬 [settings] Братья активны - проверяем блок Просто");
-    
-    const allSimpleDigits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
-    const currentSimpleDigits = settingsState.blocks.simple.digits || [];
-    
-    // Проверяем, все ли цифры выбраны в "Просто"
-    const allSelected = allSimpleDigits.every(d => currentSimpleDigits.includes(d));
-    
-    console.log("🔍 [settings] Все цифры выбраны в Просто?", allSelected);
-    console.log("🔍 [settings] Текущие цифры в Просто:", currentSimpleDigits);
-    
-    if (!allSelected) {
-      console.log("🔄 [settings] Восстановление всех цифр 1-9 в блоке 'Просто'");
-      updateSettings({
-        blocks: {
-          ...settingsState.blocks,
-          simple: {
-            ...settingsState.blocks.simple,
-            digits: allSimpleDigits
-          }
-        }
-      });
-      // Обновляем локальную копию для правильного рендера
-      settingsState.blocks.simple.digits = allSimpleDigits;
-      console.log("✅ [settings] Цифры обновлены:", settingsState.blocks.simple.digits);
-    } else {
-      console.log("✅ [settings] Все цифры уже выбраны в Просто");
-    }
-  } else {
-    console.log("📘 [settings] Братья не активны, Просто остается без изменений");
-  }
 
   const form = document.createElement("form");
   form.className = "form settings-form";
@@ -579,7 +479,8 @@ baseGrid.appendChild(timeRow.row);
 
   const blocksSection = createSection(t("settings.blocksLabel"));
   const blocksTranslations = t("settings.blocks");
-  const blockOrder = ["simple", "brothers", "friends", "mix"];
+  // Только блок "Просто" для тренажера уравнений
+  const blockOrder = ["simple"];
 
   blockOrder.forEach((key) => {
     const blockCard = createBlockCard({
@@ -590,7 +491,7 @@ baseGrid.appendChild(timeRow.row);
       allLabel: t("settings.allLabel"),
       additionLabel: t("settings.onlyAdditionLabel"),
       subtractionLabel: t("settings.onlySubtractionLabel"),
-      t,  // ✅ ИСПРАВЛЕНИЕ 2: передан параметр t
+      t,
       onUpdate: (changes) => {
         updateSettings({
           blocks: {
