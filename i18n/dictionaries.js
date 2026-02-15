@@ -140,6 +140,19 @@ export const dictionaries = {
         { "value": "100", "label": "100" }
       ],
       "inlineLabel": "Show example inline",
+      "operationsLabel": "Operations",
+      "operations": {
+        "addition": "Addition (+)",
+        "subtraction": "Subtraction (−)",
+        "multiplication": "Multiplication (×)",
+        "division": "Division (÷)"
+      },
+      "unknownPositionLabel": "Unknown position",
+      "unknownPosition": {
+        "first": "First number",
+        "second": "Second number",
+        "random": "Random"
+      },
       "submit": "Save settings"
     },
     "confirmation": {
@@ -347,6 +360,19 @@ export const dictionaries = {
         { "value": "100", "label": "100" }
       ],
       "inlineLabel": "Mostrar en una línea",
+      "operationsLabel": "Operaciones",
+      "operations": {
+        "addition": "Suma (+)",
+        "subtraction": "Resta (−)",
+        "multiplication": "Multiplicación (×)",
+        "division": "División (÷)"
+      },
+      "unknownPositionLabel": "Posición del desconocido",
+      "unknownPosition": {
+        "first": "Primer número",
+        "second": "Segundo número",
+        "random": "Aleatorio"
+      },
       "submit": "Guardar configuración"
     },
     "confirmation": {
@@ -554,6 +580,19 @@ export const dictionaries = {
         { "value": "100", "label": "100" }
       ],
       "inlineLabel": "Показывать пример в строку",
+      "operationsLabel": "Операции",
+      "operations": {
+        "addition": "Сложение (+)",
+        "subtraction": "Вычитание (−)",
+        "multiplication": "Умножение (×)",
+        "division": "Деление (÷)"
+      },
+      "unknownPositionLabel": "Позиция неизвестного",
+      "unknownPosition": {
+        "first": "Первое число",
+        "second": "Второе число",
+        "random": "Случайно"
+      },
       "submit": "Сохранить настройки"
     },
     "confirmation": {
@@ -761,6 +800,19 @@ export const dictionaries = {
         { "value": "100", "label": "100" }
       ],
       "inlineLabel": "Показувати приклад у рядок",
+      "operationsLabel": "Операції",
+      "operations": {
+        "addition": "Додавання (+)",
+        "subtraction": "Віднімання (−)",
+        "multiplication": "Множення (×)",
+        "division": "Ділення (÷)"
+      },
+      "unknownPositionLabel": "Позиція невідомого",
+      "unknownPosition": {
+        "first": "Перше число",
+        "second": "Друге число",
+        "random": "Випадково"
+      },
       "submit": "Зберегти налаштування"
     },
     "confirmation": {
