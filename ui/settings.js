@@ -339,13 +339,33 @@ export function renderSettings(container, { t, state, updateSettings, navigate }
   paragraph.textContent = t("settings.description");
 
   // ✅ СИНХРОНИЗАЦИЯ: Если "Братья" активны, в "Просто" должны быть все цифры 1-9
-  const settingsState = state.settings;
+  const settingsState = state.settings || {
+    mode: "mental",
+    digits: "1",
+    combineLevels: false,
+    actions: { count: 1, infinite: false },
+    examples: { count: 2, infinite: false },
+    timeLimit: "none",
+    speed: "none",
+    toggles: {},
+    blocks: {
+      simple: { digits: ["1", "2", "3", "4"], onlyAddition: false, onlySubtraction: false },
+      brothers: { digits: [], onlyAddition: false, onlySubtraction: false },
+      friends: { digits: [], onlyAddition: false, onlySubtraction: false },
+      mix: { digits: [], onlyAddition: false, onlySubtraction: false }
+    },
+    transition: "none",
+    inline: false,
+    operations: { addition: true, subtraction: true, multiplication: false, division: false },
+    actionsCount: 2,
+    unknownPosition: 'random'
+  };
   
   console.log("🔍 [settings] Проверка синхронизации блоков при рендере");
-  console.log("🔍 [settings] Братья digits:", settingsState.blocks.brothers.digits);
-  console.log("🔍 [settings] Просто digits:", settingsState.blocks.simple.digits);
-  
-  const brothersSelected = settingsState.blocks.brothers.digits.length > 0;
+  console.log("🔍 [settings] Братья digits:", settingsState.blocks?.brothers?.digits || []);
+  console.log("🔍 [settings] Просто digits:", settingsState.blocks?.simple?.digits || []);
+
+  const brothersSelected = (settingsState.blocks?.brothers?.digits || []).length > 0;
   
   if (brothersSelected) {
     console.log("👬 [settings] Братья активны - проверяем блок Просто");
