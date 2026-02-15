@@ -62,50 +62,21 @@ export class EquationView {
   }
 
   /**
-   * Создаёт SVG голову Лео
+   * Создаёт изображение головы Лео
    * @private
    */
   _createLeoHead() {
     const leoContainer = document.createElement('span');
     leoContainer.className = 'equation-leo';
 
-    // Используем SVG напрямую для головы Лео
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '48');
-    svg.setAttribute('height', '48');
-    svg.setAttribute('viewBox', '0 0 64 64');
-    svg.innerHTML = `
-      <!-- Голова -->
-      <circle cx="32" cy="32" r="28" fill="#F4A460"/>
+    // Используем изображение львенка
+    const img = document.createElement('img');
+    img.src = 'assets/images/leo-head.svg';
+    img.alt = 'Leo';
+    img.width = 48;
+    img.height = 48;
 
-      <!-- Левое ухо -->
-      <circle cx="15" cy="15" r="8" fill="#D2691E"/>
-
-      <!-- Правое ухо -->
-      <circle cx="49" cy="15" r="8" fill="#D2691E"/>
-
-      <!-- Грива -->
-      <circle cx="12" cy="20" r="6" fill="#FF8C00"/>
-      <circle cx="52" cy="20" r="6" fill="#FF8C00"/>
-      <circle cx="10" cy="30" r="5" fill="#FF8C00"/>
-      <circle cx="54" cy="30" r="5" fill="#FF8C00"/>
-
-      <!-- Левый глаз -->
-      <circle cx="22" cy="28" r="4" fill="#000"/>
-      <circle cx="23" cy="27" r="1.5" fill="#FFF"/>
-
-      <!-- Правый глаз -->
-      <circle cx="42" cy="28" r="4" fill="#000"/>
-      <circle cx="43" cy="27" r="1.5" fill="#FFF"/>
-
-      <!-- Нос -->
-      <ellipse cx="32" cy="38" rx="4" ry="3" fill="#8B4513"/>
-
-      <!-- Рот (улыбка) -->
-      <path d="M 22 44 Q 32 50 42 44" stroke="#8B4513" stroke-width="2" fill="none"/>
-    `;
-
-    leoContainer.appendChild(svg);
+    leoContainer.appendChild(img);
     return leoContainer;
   }
 

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Грива (задний слой) -->
+  <circle cx="100" cy="100" r="85" fill="#FF9933" opacity="0.9"/>
+
+  <!-- Дополнительные элементы гривы -->
+  <circle cx="60" cy="70" r="25" fill="#FF8800" opacity="0.8"/>
+  <circle cx="140" cy="70" r="25" fill="#FF8800" opacity="0.8"/>
+  <circle cx="45" cy="100" r="28" fill="#FF8800" opacity="0.8"/>
+  <circle cx="155" cy="100" r="28" fill="#FF8800" opacity="0.8"/>
+  <circle cx="60" cy="135" r="25" fill="#FF8800" opacity="0.8"/>
+  <circle cx="140" cy="135" r="25" fill="#FF8800" opacity="0.8"/>
+  <circle cx="80" cy="50" r="20" fill="#FF8800" opacity="0.7"/>
+  <circle cx="120" cy="50" r="20" fill="#FF8800" opacity="0.7"/>
+
+  <!-- Основная голова -->
+  <circle cx="100" cy="100" r="65" fill="#FFB366"/>
+
+  <!-- Левое ухо -->
+  <ellipse cx="60" cy="50" rx="20" ry="25" fill="#FF9933"/>
+  <ellipse cx="60" cy="55" rx="12" ry="15" fill="#FFB366"/>
+
+  <!-- Правое ухо -->
+  <ellipse cx="140" cy="50" rx="20" ry="25" fill="#FF9933"/>
+  <ellipse cx="140" cy="55" rx="12" ry="15" fill="#FFB366"/>
+
+  <!-- Морда (нижняя часть) -->
+  <ellipse cx="100" cy="120" rx="45" ry="35" fill="#FFCC99"/>
+
+  <!-- Левый глаз (белок) -->
+  <ellipse cx="75" cy="90" rx="15" ry="18" fill="#FFFFFF"/>
+  <!-- Левый глаз (зрачок) -->
+  <circle cx="75" cy="92" r="10" fill="#4A4A4A"/>
+  <!-- Левый глаз (блик) -->
+  <circle cx="78" cy="88" r="4" fill="#FFFFFF"/>
+
+  <!-- Правый глаз (белок) -->
+  <ellipse cx="125" cy="90" rx="15" ry="18" fill="#FFFFFF"/>
+  <!-- Правый глаз (зрачок) -->
+  <circle cx="125" cy="92" r="10" fill="#4A4A4A"/>
+  <!-- Правый глаз (блик) -->
+  <circle cx="128" cy="88" r="4" fill="#FFFFFF"/>
+
+  <!-- Нос -->
+  <ellipse cx="100" cy="110" rx="8" ry="6" fill="#8B5A3C"/>
+
+  <!-- Рот (улыбка) -->
+  <path d="M 75 125 Q 100 135 125 125"
+        stroke="#8B5A3C"
+        stroke-width="3"
+        fill="none"
+        stroke-linecap="round"/>
+
+  <!-- Усики (левые) -->
+  <line x1="50" y1="110" x2="25" y2="105" stroke="#8B5A3C" stroke-width="2" stroke-linecap="round"/>
+  <line x1="50" y1="115" x2="20" y2="115" stroke="#8B5A3C" stroke-width="2" stroke-linecap="round"/>
+  <line x1="50" y1="120" x2="25" y2="125" stroke="#8B5A3C" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Усики (правые) -->
+  <line x1="150" y1="110" x2="175" y2="105" stroke="#8B5A3C" stroke-width="2" stroke-linecap="round"/>
+  <line x1="150" y1="115" x2="180" y2="115" stroke="#8B5A3C" stroke-width="2" stroke-linecap="round"/>
+  <line x1="150" y1="120" x2="175" y2="125" stroke="#8B5A3C" stroke-width="2" stroke-linecap="round"/>
+</svg>
