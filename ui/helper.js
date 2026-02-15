@@ -59,11 +59,16 @@ export function createStepIndicator(currentStep, t) {
       item.classList.add('step-indicator__item--completed');
     }
 
-    const span = document.createElement('span');
-    span.className = 'step-indicator__label';
-    span.textContent = t(`header.steps.${step}`);
+    // Создаем номер в кружке
+    const number = document.createElement('span');
+    number.className = 'step-indicator__number';
+    number.textContent = index + 1;
 
-    item.appendChild(span);
+    const label = document.createElement('span');
+    label.className = 'step-indicator__label';
+    label.textContent = t(`header.steps.${step}`);
+
+    item.append(number, label);
     list.appendChild(item);
   });
 
