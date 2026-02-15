@@ -3,9 +3,9 @@ export const dictionaries = {
   "en": {
     "language": "English",
     "header": {
-      "titleMain": "Mind Abacus",
-      "titleSub": "Think fast. Count smart.",
-      "tagline": "Mental arithmetic trainer",
+      "titleMain": "Leo Equations",
+      "titleSub": "Solve equations with Leo the Lion",
+      "tagline": "Equation trainer with one unknown",
       "steps": {
         "settings": "Settings",
         "confirmation": "Confirmation",
@@ -223,9 +223,9 @@ export const dictionaries = {
   "es": {
     "language": "Español",
     "header": {
-      "titleMain": "Mind Abacus",
-      "titleSub": "Piensa rápido. Cuenta con inteligencia.",
-      "tagline": "Entrenador de aritmética mental",
+      "titleMain": "Ecuaciones con Leo",
+      "titleSub": "Resuelve ecuaciones con Leo el León",
+      "tagline": "Entrenador de ecuaciones con incógnita",
       "steps": {
         "settings": "Ajustes",
         "confirmation": "Confirmación",
@@ -443,9 +443,9 @@ export const dictionaries = {
   "ru": {
     "language": "Русский",
     "header": {
-      "titleMain": "Mind Abacus",
-      "titleSub": "Думай быстро. Считай с умом.",
-      "tagline": "Тренажёр ментальной арифметики",
+      "titleMain": "Уравнения с Лео",
+      "titleSub": "Решай уравнения вместе с Львёнком Лео",
+      "tagline": "Тренажёр уравнений с одним неизвестным",
       "steps": {
         "settings": "Настройки",
         "confirmation": "Подтверждение",
@@ -663,9 +663,9 @@ export const dictionaries = {
   "ua": {
     "language": "Українська",
     "header": {
-      "titleMain": "Mind Abacus",
-      "titleSub": "Думай швидко. Рахуй з розумом.",
-      "tagline": "Тренажер ментальної арифметики",
+      "titleMain": "Рівняння з Лео",
+      "titleSub": "Розв'язуй рівняння разом з Левеням Лео",
+      "tagline": "Тренажер рівнянь з одним невідомим",
       "steps": {
         "settings": "Налаштування",
         "confirmation": "Підтвердження",
