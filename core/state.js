@@ -84,13 +84,18 @@ const defaultState = {
   }
 };
 
-// Initialize state if not already set
-if (persistedSettings) {
-  setState({ settings: persistedSettings }, false);
-}
-if (persistedLanguage) {
-  setState({ language: persistedLanguage }, false);
-}
+// Initialize state with defaults first
+const initialSettings = persistedSettings ? {
+  ...defaultState.settings,
+  ...persistedSettings
+} : defaultState.settings;
+
+setState({
+  route: defaultState.route,
+  language: persistedLanguage || defaultState.language,
+  settings: initialSettings,
+  results: defaultState.results
+}, false);
 
 // Backward-compatible proxy for direct state access
 export const state = new Proxy(defaultState, {
