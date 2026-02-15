@@ -20,9 +20,6 @@ export function renderConfirmation(container, { t, state, navigate }) {
 
   const settings = state.settings;
 
-  // Mode
-  addConfigItem(config, t('confirmation.list.mode'), t(`settings.modeOptions.${settings.mode}`));
-
   // Digits
   addConfigItem(config, t('confirmation.list.digits'), t(`settings.digitsOptions.${settings.digits}`));
 

@@ -10,47 +10,16 @@ let currentState = {
   route: DEFAULTS.ROUTE,
   language: DEFAULTS.LANGUAGE,
   settings: {
-    mode: "mental",
     digits: "1",
     combineLevels: false,
     actions: { count: 1, infinite: false },
     examples: { count: 2, infinite: false },
-    timeLimit: "none",
-    speed: "none",
     toggles: {
-      hard: false,
-      dictation: false,
       fractions: false,
-      mirror: false,
       round: false,
       positive: false,
-      negative: false,
-      opposite: false
+      negative: false
     },
-    blocks: {
-      simple: {
-        digits: ["1", "2", "3", "4"],
-        onlyAddition: false,
-        onlySubtraction: false
-      },
-      brothers: {
-        digits: [],
-        onlyAddition: false,
-        onlySubtraction: false
-      },
-      friends: {
-        digits: [],
-        onlyAddition: false,
-        onlySubtraction: false
-      },
-      mix: {
-        digits: [],
-        onlyAddition: false,
-        onlySubtraction: false
-      }
-    },
-    transition: "none",
-    inline: false,
     operations: {
       addition: true,
       subtraction: true,
