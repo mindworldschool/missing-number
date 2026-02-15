@@ -71,7 +71,7 @@ export class EquationView {
 
     // Используем изображение львенка
     const img = document.createElement('img');
-    img.src = 'assets/images/leo-head.png';
+    img.src = 'assets/images/leo-head.svg';
     img.alt = 'Leo';
     img.width = 48;
     img.height = 48;
