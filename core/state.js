@@ -66,7 +66,16 @@ const defaultState = {
       }
     },
     transition: "none",
-    inline: false
+    inline: false,
+    // Настройки для уравнений
+    operations: {
+      addition: true,
+      subtraction: true,
+      multiplication: false,
+      division: false
+    },
+    actionsCount: 2,
+    unknownPosition: 'random'
   },
   results: {
     success: 0,

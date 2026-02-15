@@ -584,6 +584,58 @@ baseGrid.appendChild(timeRow.row);
   });
   form.appendChild(blocksSection);
 
+  // Секция "Операции" для уравнений
+  const operationsSection = createSection(t("settings.operationsLabel"));
+  const operationsList = document.createElement("div");
+  operationsList.className = "toggle-list";
+
+  ['addition', 'subtraction', 'multiplication', 'division'].forEach(op => {
+    const toggle = createCheckbox(
+      t(`settings.operations.${op}`),
+      settingsState.operations?.[op] ?? false,
+      (checked) => {
+        updateSettings({
+          operations: { ...state.settings.operations, [op]: checked }
+        });
+      },
+      "toggle-pill"
+    );
+    operationsList.appendChild(toggle);
+  });
+
+  operationsSection.appendChild(operationsList);
+  form.appendChild(operationsSection);
+
+  // Секция "Позиция неизвестного" для уравнений
+  const unknownPositionSection = createSection(t("settings.unknownPositionLabel"));
+  const positionList = document.createElement("div");
+  positionList.className = "toggle-list";
+
+  ['first', 'second', 'random'].forEach(pos => {
+    const isSelected = (settingsState.unknownPosition || 'random') === pos;
+    const toggle = createCheckbox(
+      t(`settings.unknownPosition.${pos}`),
+      isSelected,
+      (checked) => {
+        if (checked) {
+          updateSettings({ unknownPosition: pos });
+          // Обновляем UI: снимаем выделение с других опций
+          positionList.querySelectorAll('input[type="checkbox"]').forEach((input, idx) => {
+            if (idx !== ['first', 'second', 'random'].indexOf(pos)) {
+              input.checked = false;
+              input.closest('label')?.classList.remove('is-active');
+            }
+          });
+        }
+      },
+      "toggle-pill"
+    );
+    positionList.appendChild(toggle);
+  });
+
+  unknownPositionSection.appendChild(positionList);
+  form.appendChild(unknownPositionSection);
+
   const extraGrid = document.createElement("div");
   extraGrid.className = "settings-grid";
 
