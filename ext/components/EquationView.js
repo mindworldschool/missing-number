@@ -69,12 +69,17 @@ export class EquationView {
     const leoContainer = document.createElement('span');
     leoContainer.className = 'equation-leo';
 
-    // Используем изображение львенка
+    // Используем изображение львенка (с fallback на SVG)
     const img = document.createElement('img');
     img.src = 'assets/images/leo-head.png';
     img.alt = 'Leo';
     img.width = 48;
     img.height = 48;
+
+    // Fallback на SVG если PNG не загрузился
+    img.onerror = function() {
+      this.src = 'assets/images/leo-head.svg';
+    };
 
     leoContainer.appendChild(img);
     return leoContainer;
