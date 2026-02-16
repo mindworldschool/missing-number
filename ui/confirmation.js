@@ -15,7 +15,7 @@ export function renderConfirmation(container, { t, state, navigate }) {
   section.insertBefore(indicator, section.firstChild);
 
   // Configuration list
-  const config = document.createElement('dl');
+  const config = document.createElement('div');
   config.className = 'confirmation-list';
 
   const settings = state.settings;
@@ -87,13 +87,18 @@ export function renderConfirmation(container, { t, state, navigate }) {
 }
 
 function addConfigItem(container, label, value) {
-  const dt = document.createElement('dt');
-  dt.className = 'confirmation-list__label';
-  dt.textContent = label;
+  // Создаем одну строку с label и value
+  const row = document.createElement('div');
+  row.className = 'confirmation-list__item';
 
-  const dd = document.createElement('dd');
-  dd.className = 'confirmation-list__value';
-  dd.textContent = value;
+  const labelSpan = document.createElement('span');
+  labelSpan.className = 'confirmation-list__label';
+  labelSpan.textContent = label;
 
-  container.append(dt, dd);
+  const valueSpan = document.createElement('span');
+  valueSpan.className = 'confirmation-list__value';
+  valueSpan.textContent = value;
+
+  row.append(labelSpan, valueSpan);
+  container.appendChild(row);
 }
