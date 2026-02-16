@@ -20,8 +20,13 @@ export function renderConfirmation(container, { t, state, navigate }) {
 
   const settings = state.settings;
 
-  // Digits
-  addConfigItem(config, t('confirmation.list.digits'), t(`settings.digitsOptions.${settings.digits}`));
+  // Digits - исправляем [object Object]
+  const digitsOptions = t('settings.digitsOptions');
+  const digitOption = Array.isArray(digitsOptions)
+    ? digitsOptions.find(opt => opt.value === settings.digits)
+    : null;
+  const digitsText = digitOption ? digitOption.label : settings.digits;
+  addConfigItem(config, t('confirmation.list.digits'), digitsText);
 
   // Examples count
   const examplesText = settings.examples?.infinite

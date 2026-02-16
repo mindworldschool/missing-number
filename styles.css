@@ -31,46 +31,65 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 48px;
+  padding: 12px 48px;
   background: linear-gradient(135deg, var(--color-primary), #ff9a2b);
   color: #fff8ec;
   box-shadow: var(--shadow-inset);
-  gap: 24px;
+  gap: 20px;
+  min-height: 72px;
 }
 
 .app-header__brand {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
 }
 
 .app-header__titles {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .app-header__logo {
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
   background: rgba(255, 255, 255, 0.18);
   object-fit: contain;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   padding: 8px;
+  flex-shrink: 0;
 }
 
 .app-header__title {
   margin: 0;
   font-family: "Baloo 2", cursive;
-  font-size: 1.9rem;
+  font-size: 1.5rem;
+  line-height: 1.2;
   color: #fff8ec;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+.app-header__title .title-main {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.app-header__title .title-sub {
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.9;
 }
 
 .app-header__tagline {
-  margin: 4px 0 0;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
-  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.2;
 }
 
 .app-header__languages {
@@ -793,8 +812,34 @@ input[type="number"]::-webkit-inner-spin-button {
   .app-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
-    padding: 20px 24px;
+    gap: 12px;
+    padding: 12px 20px;
+    min-height: 60px;
+  }
+
+  .app-header__brand {
+    gap: 12px;
+  }
+
+  .app-header__logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .app-header__title {
+    font-size: 1.3rem;
+  }
+
+  .app-header__title .title-main {
+    font-size: 1.3rem;
+  }
+
+  .app-header__title .title-sub {
+    font-size: 0.8rem;
+  }
+
+  .app-header__tagline {
+    font-size: 0.75rem;
   }
 
   .app-header__logo {
