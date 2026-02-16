@@ -231,6 +231,40 @@ body {
   letter-spacing: 0.01em;
 }
 
+/* Confirmation screen - список настроек */
+.confirmation-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2.5vh, 24px);
+  margin: clamp(24px, 3vh, 32px) 0;
+  padding: clamp(24px, 3vh, 32px);
+  background: rgba(255, 124, 0, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 124, 0, 0.12);
+}
+
+.confirmation-list__label {
+  display: inline;
+  font-weight: 700;
+  font-size: clamp(15px, 2vh, 18px);
+  color: #7d733a;
+  margin: 0;
+}
+
+.confirmation-list__label::after {
+  content: ': ';
+  font-weight: 700;
+}
+
+.confirmation-list__value {
+  display: inline;
+  font-weight: 400;
+  font-size: clamp(15px, 2vh, 18px);
+  color: rgba(125, 115, 58, 0.8);
+  margin: 0;
+  margin-left: 4px;
+}
+
 /* Legacy badge styles (можно удалить, если не используется) */
 .step-indicator__badge {
   width: 32px;
