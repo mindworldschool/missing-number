@@ -29,6 +29,34 @@ export function renderConfirmation(container, { t, state, navigate }) {
     : String(settings.examples?.count || 0);
   addConfigItem(config, t('confirmation.list.examples'), examplesText);
 
+  // Operations для уравнений
+  if (settings.operations) {
+    const operations = Object.keys(settings.operations)
+      .filter(op => settings.operations[op])
+      .map(op => t(`settings.operations.${op}`))
+      .join(', ');
+    if (operations) {
+      addConfigItem(config, t('settings.operationsLabel'), operations);
+    }
+  }
+
+  // Unknown position
+  if (settings.unknownPosition) {
+    addConfigItem(
+      config,
+      t('settings.unknownPositionLabel'),
+      t(`settings.unknownPosition.${settings.unknownPosition}`)
+    );
+  }
+
+  // Actions count
+  if (settings.actions) {
+    const actionsText = settings.actions.infinite
+      ? t('confirmation.counter.infinity')
+      : String(settings.actions.count || 1);
+    addConfigItem(config, t('settings.actions.label'), actionsText);
+  }
+
   body.appendChild(config);
 
   // Actions

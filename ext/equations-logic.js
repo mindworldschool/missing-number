@@ -402,53 +402,49 @@ function _injectStyles() {
   style.textContent = `
     ${EQUATION_STYLES}
 
-    /* Mind Abacus стиль - центрированный layout */
+    /* Mind Abacus стиль - двухколоночный layout: СЛЕВА (пример+ввод+кнопка) СПРАВА (счетчики+прогресс) */
     .trainer-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: clamp(20px, 4vh, 40px);
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: clamp(30px, 4vw, 50px);
       padding: clamp(20px, 3vh, 40px);
-      max-width: 900px;
+      max-width: 1400px;
       margin: 0 auto;
       min-height: 60vh;
+      align-items: start;
     }
 
     .trainer-left {
-      width: 100%;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: clamp(30px, 5vh, 50px);
-      flex: 1;
+      gap: clamp(25px, 4vh, 40px);
+      width: 100%;
     }
 
     .trainer-equation-area {
-      min-height: clamp(150px, 25vh, 250px);
+      min-height: clamp(180px, 28vh, 280px);
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(255, 124, 0, 0.04);
       border-radius: 16px;
-      padding: clamp(20px, 3vh, 40px);
+      padding: clamp(25px, 4vh, 45px);
       border: 2px solid rgba(255, 124, 0, 0.1);
     }
 
     .trainer-answer-section {
       width: 100%;
-      max-width: 600px;
       display: flex;
       flex-direction: column;
-      gap: clamp(20px, 3vh, 30px);
-      align-items: stretch;
+      gap: clamp(18px, 2.5vh, 25px);
     }
 
     .trainer-answer-label {
-      font-size: clamp(18px, 2.5vh, 24px);
+      font-size: clamp(18px, 2.5vh, 22px);
       font-weight: 700;
       color: #7d733a;
-      text-align: center;
+      text-align: left;
     }
 
     /* Большое поле ввода с оранжевой рамкой */
@@ -499,23 +495,21 @@ function _injectStyles() {
       box-shadow: 0 8px 20px rgba(255, 124, 0, 0.3);
     }
 
-    /* Правая панель перемещена вниз */
+    /* Правая панель - счетчики и прогресс */
     .trainer-right {
-      width: 100%;
       display: flex;
       flex-direction: column;
-      gap: clamp(15px, 2vh, 25px);
-      margin-top: auto;
+      gap: clamp(20px, 3vh, 30px);
+      position: sticky;
+      top: 20px;
     }
 
-    /* Счетчики в одну строку */
+    /* Счетчики вертикально */
     .trainer-counters {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: clamp(12px, 2vw, 20px);
+      gap: clamp(12px, 2vw, 16px);
       width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
     }
 
     .trainer-counter {
@@ -554,8 +548,6 @@ function _injectStyles() {
     /* Прогресс-бар в стиле Mind Abacus */
     .trainer-progress-container {
       width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -594,8 +586,6 @@ function _injectStyles() {
       font-weight: 700;
       color: #7d733a;
       font-family: 'Baloo 2', cursive;
-      max-width: 200px;
-      margin: 0 auto;
     }
 
     .trainer-exit-button {
@@ -608,8 +598,6 @@ function _injectStyles() {
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
-      max-width: 200px;
-      margin: 0 auto;
     }
 
     .trainer-exit-button:hover {
@@ -645,10 +633,15 @@ function _injectStyles() {
       font-size: 1.2em;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 968px) {
       .trainer-container {
-        padding: 16px;
-        gap: 20px;
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 20px;
+      }
+
+      .trainer-right {
+        position: static;
       }
 
       .trainer-counters {
