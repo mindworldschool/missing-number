@@ -16,47 +16,53 @@ export function renderResults(container, { t, state, navigate }) {
 
   const results = state.results || { success: 0, total: 0, wrongExamples: [] };
 
-  // Stats
-  const stats = document.createElement('div');
-  stats.className = 'results-stats';
-
   const successRate = results.total > 0
     ? Math.round((results.success / results.total) * 100)
     : 0;
+  const errorsCount = results.total - results.success;
+  const errorsRate = results.total > 0
+    ? Math.round((errorsCount / results.total) * 100)
+    : 0;
 
-  stats.innerHTML = `
-    <div class="results-stat results-stat--success">
-      <div class="results-stat__value">${results.success}</div>
-      <div class="results-stat__label">${t('results.success')}</div>
+  // Stats в стиле Mind Abacus
+  const statsContainer = document.createElement('div');
+  statsContainer.className = 'results-stats-container';
+
+  // Верхняя статистика: Правильно | Ошибки
+  const statsTop = document.createElement('div');
+  statsTop.className = 'results-stats-top';
+
+  statsTop.innerHTML = `
+    <div class="results-stat-item results-stat-item--success">
+      <span class="results-stat-item__label">${t('results.success')}:</span>
+      <span class="results-stat-item__value">${results.success} / ${results.total} (${successRate}%)</span>
     </div>
-    <div class="results-stat results-stat--total">
-      <div class="results-stat__value">${successRate}%</div>
-      <div class="results-stat__label">Accuracy</div>
-    </div>
-    <div class="results-stat results-stat--errors">
-      <div class="results-stat__value">${results.total - results.success}</div>
-      <div class="results-stat__label">${t('results.mistakes')}</div>
+    <div class="results-stat-item results-stat-item--errors">
+      <span class="results-stat-item__label">${t('results.mistakes')}:</span>
+      <span class="results-stat-item__value">${errorsCount} / ${results.total} (${errorsRate}%)</span>
     </div>
   `;
 
-  body.appendChild(stats);
+  // Прогресс-бар
+  const progressBar = document.createElement('div');
+  progressBar.className = 'results-progress';
+  progressBar.innerHTML = `
+    <div class="results-progress__bar">
+      <div class="results-progress__fill results-progress__fill--success" style="width: ${successRate}%"></div>
+    </div>
+  `;
 
-  // Actions
+  statsContainer.append(statsTop, progressBar);
+  body.appendChild(statsContainer);
+
+  // Actions в стиле Mind Abacus
   const actions = document.createElement('div');
-  actions.className = 'form__actions';
+  actions.className = 'form__actions results-actions';
 
-  const newButton = createButton({
-    label: t('results.cta'),
-    onClick: () => navigate('settings'),
-    variant: 'primary'
-  });
-
-  actions.appendChild(newButton);
-
-  // Retry button if there are errors
+  // Retry button if there are errors (первая кнопка - коричневая)
   if (results.wrongExamples && results.wrongExamples.length > 0) {
     const retryButton = createButton({
-      label: t('results.retryErrors'),
+      label: `${t('results.retryErrors')} (${results.wrongExamples.length})`,
       onClick: () => {
         state.retryMode = {
           enabled: true,
@@ -69,6 +75,14 @@ export function renderResults(container, { t, state, navigate }) {
     actions.appendChild(retryButton);
   }
 
+  // New button (вторая кнопка - оранжевая)
+  const newButton = createButton({
+    label: t('results.cta'),
+    onClick: () => navigate('settings'),
+    variant: 'primary'
+  });
+
+  actions.appendChild(newButton);
   body.appendChild(actions);
   container.appendChild(section);
 }
