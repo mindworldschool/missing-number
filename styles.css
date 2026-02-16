@@ -42,18 +42,17 @@ body {
 .app-header__brand {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 }
 
 .app-header__titles {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
+  }
 
 .app-header__logo {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.18);
   object-fit: contain;
