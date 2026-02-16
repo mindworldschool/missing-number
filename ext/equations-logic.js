@@ -183,7 +183,8 @@ function _createLayout(t) {
 
   rightPanel.append(counters, progressContainer, timer, exitButton);
 
-  // Собираем всё вместе
+  // Собираем всё вместе - центрированный layout
+  leftPanel.append(equationContainer, answerSection);
   root.append(leftPanel, rightPanel);
 
   return {
@@ -401,185 +402,273 @@ function _injectStyles() {
   style.textContent = `
     ${EQUATION_STYLES}
 
+    /* Mind Abacus стиль - центрированный layout */
     .trainer-container {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 40px;
-      padding: 20px;
-      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(20px, 4vh, 40px);
+      padding: clamp(20px, 3vh, 40px);
+      max-width: 900px;
       margin: 0 auto;
+      min-height: 60vh;
     }
 
     .trainer-left {
+      width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 30px;
+      align-items: center;
+      gap: clamp(30px, 5vh, 50px);
+      flex: 1;
     }
 
     .trainer-equation-area {
-      min-height: 200px;
+      min-height: clamp(150px, 25vh, 250px);
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 20px;
+      background: rgba(255, 124, 0, 0.04);
+      border-radius: 16px;
+      padding: clamp(20px, 3vh, 40px);
+      border: 2px solid rgba(255, 124, 0, 0.1);
     }
 
     .trainer-answer-section {
+      width: 100%;
+      max-width: 600px;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: clamp(20px, 3vh, 30px);
+      align-items: stretch;
     }
 
     .trainer-answer-label {
-      font-size: 18px;
-      font-weight: 600;
-      color: #2c3e50;
+      font-size: clamp(18px, 2.5vh, 24px);
+      font-weight: 700;
+      color: #7d733a;
+      text-align: center;
     }
 
+    /* Большое поле ввода с оранжевой рамкой */
     .trainer-answer-input {
-      padding: 15px;
-      font-size: 24px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
+      padding: clamp(20px, 3vh, 30px);
+      font-size: clamp(36px, 6vh, 56px);
+      border: 4px solid #FF7C00;
+      border-radius: 16px;
       font-family: 'Baloo 2', cursive;
+      font-weight: 700;
       text-align: center;
-      transition: border-color 0.2s;
+      transition: all 0.3s ease;
+      background: white;
+      box-shadow: 0 8px 24px rgba(255, 124, 0, 0.15);
     }
 
     .trainer-answer-input:focus {
       outline: none;
-      border-color: #3498db;
+      border-color: #ff9a2b;
+      box-shadow: 0 8px 32px rgba(255, 124, 0, 0.25), 0 0 0 6px rgba(255, 124, 0, 0.1);
+      transform: translateY(-2px);
     }
 
+    /* Большая оранжевая кнопка */
     .trainer-submit-button {
-      padding: 15px 30px;
-      font-size: 18px;
-      font-weight: 600;
-      background: #3498db;
-      color: white;
+      padding: clamp(18px, 3vh, 24px) clamp(40px, 6vw, 80px);
+      font-size: clamp(20px, 3vh, 28px);
+      font-weight: 700;
+      background: linear-gradient(135deg, #FF7C00, #ff9a2b);
+      color: #fff8ec;
       border: none;
-      border-radius: 8px;
+      border-radius: 999px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.3s ease;
+      box-shadow: 0 12px 28px rgba(255, 124, 0, 0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
     }
 
     .trainer-submit-button:hover {
-      background: #2980b9;
+      background: linear-gradient(135deg, #e06600, #ff7c00);
+      box-shadow: 0 16px 36px rgba(255, 124, 0, 0.4);
+      transform: translateY(-3px);
     }
 
+    .trainer-submit-button:active {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(255, 124, 0, 0.3);
+    }
+
+    /* Правая панель перемещена вниз */
     .trainer-right {
+      width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 30px;
+      gap: clamp(15px, 2vh, 25px);
+      margin-top: auto;
     }
 
+    /* Счетчики в одну строку */
     .trainer-counters {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      gap: clamp(12px, 2vw, 20px);
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
     }
 
     .trainer-counter {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 20px;
+      gap: 8px;
+      padding: clamp(15px, 2vh, 20px);
       border-radius: 12px;
-      font-size: 24px;
-      font-weight: 600;
+      font-size: clamp(16px, 2vh, 20px);
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     .trainer-counter--correct {
-      background: #d4edda;
-      color: #155724;
+      background: linear-gradient(135deg, #10b981, #34d399);
+      color: white;
     }
 
     .trainer-counter--incorrect {
-      background: #f8d7da;
-      color: #721c24;
+      background: linear-gradient(135deg, #ef4444, #f87171);
+      color: white;
     }
 
     .trainer-counter__value {
-      font-size: 32px;
+      font-size: clamp(32px, 5vh, 48px);
+      font-family: 'Baloo 2', cursive;
     }
 
+    .trainer-counter__label {
+      font-size: clamp(20px, 3vh, 28px);
+      opacity: 0.95;
+    }
+
+    /* Прогресс-бар в стиле Mind Abacus */
     .trainer-progress-container {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .trainer-progress-bar {
-      height: 30px;
-      background: #e9ecef;
-      border-radius: 15px;
+      height: clamp(20px, 3vh, 28px);
+      background: rgba(125, 115, 58, 0.15);
+      border-radius: 999px;
       overflow: hidden;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     .trainer-progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #3498db, #2ecc71);
-      transition: width 0.3s ease;
+      background: linear-gradient(90deg, #FF7C00, #ff9a2b, #ffc366);
+      transition: width 0.4s ease;
+      box-shadow: 0 0 12px rgba(255, 124, 0, 0.5);
     }
 
     .trainer-progress-text {
       text-align: center;
-      font-size: 16px;
-      font-weight: 600;
-      color: #2c3e50;
+      font-size: clamp(14px, 1.8vh, 18px);
+      font-weight: 700;
+      color: #7d733a;
+      letter-spacing: 0.02em;
     }
 
     .trainer-timer {
-      padding: 15px;
-      background: #fff3cd;
-      border-radius: 8px;
+      padding: clamp(12px, 2vh, 16px);
+      background: rgba(255, 124, 0, 0.08);
+      border: 2px solid rgba(255, 124, 0, 0.2);
+      border-radius: 12px;
       text-align: center;
-      font-size: 24px;
-      font-weight: 600;
-      color: #856404;
-      font-family: 'Courier New', monospace;
+      font-size: clamp(20px, 3vh, 28px);
+      font-weight: 700;
+      color: #7d733a;
+      font-family: 'Baloo 2', cursive;
+      max-width: 200px;
+      margin: 0 auto;
     }
 
     .trainer-exit-button {
-      padding: 15px;
-      background: #e74c3c;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
+      padding: clamp(12px, 2vh, 16px) clamp(24px, 4vw, 40px);
+      background: rgba(125, 115, 58, 0.15);
+      color: #7d733a;
+      border: 2px solid rgba(125, 115, 58, 0.25);
+      border-radius: 999px;
+      font-size: clamp(14px, 1.8vh, 18px);
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.3s ease;
+      max-width: 200px;
+      margin: 0 auto;
     }
 
     .trainer-exit-button:hover {
-      background: #c0392b;
+      background: rgba(125, 115, 58, 0.25);
+      border-color: rgba(125, 115, 58, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .trainer-completion-message {
       text-align: center;
-      padding: 40px;
+      padding: clamp(30px, 5vh, 60px);
     }
 
     .trainer-completion-message h2 {
-      font-size: 32px;
+      font-size: clamp(28px, 5vh, 42px);
       margin-bottom: 20px;
-      color: #2c3e50;
+      color: #FF7C00;
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
     }
 
     .trainer-completion-message p {
-      font-size: 20px;
+      font-size: clamp(18px, 2.5vh, 24px);
       margin: 10px 0;
-      color: #555;
+      color: #7d733a;
+      font-weight: 600;
+    }
+
+    .trainer-completion-message strong {
+      color: #FF7C00;
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.2em;
     }
 
     @media (max-width: 768px) {
       .trainer-container {
-        grid-template-columns: 1fr;
+        padding: 16px;
         gap: 20px;
+      }
+
+      .trainer-counters {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .trainer-answer-input {
+        border-width: 3px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .trainer-answer-input {
+        font-size: 32px;
+        padding: 18px;
+      }
+
+      .trainer-submit-button {
+        font-size: 18px;
+        padding: 16px 32px;
       }
     }
   `;
