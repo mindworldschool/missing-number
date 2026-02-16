@@ -38,7 +38,7 @@ export const dictionaries = {
       ],
       "combineLabel": "Combine digit levels",
       "actions": {
-        "label": "Number of actions",
+        "label": "Numbers in equation",
         "infinityLabel": "∞"
       },
       "examples": {
@@ -73,7 +73,7 @@ export const dictionaries = {
       "list": {
         "digits": "Digit length",
         "combine": "Combine digit levels",
-        "actions": "Number of actions",
+        "actions": "Numbers in equation",
         "examples": "Number of examples"
       },
       "boolean": {
@@ -151,7 +151,7 @@ export const dictionaries = {
       ],
       "combineLabel": "Combinación de rangos numéricos",
       "actions": {
-        "label": "Cantidad de acciones",
+        "label": "Cantidad de números",
         "infinityLabel": "∞"
       },
       "examples": {
@@ -186,7 +186,7 @@ export const dictionaries = {
       "list": {
         "digits": "Cantidad de dígitos",
         "combine": "Combinación de rangos",
-        "actions": "Cantidad de acciones",
+        "actions": "Cantidad de números",
         "examples": "Cantidad de ejemplos"
       },
       "boolean": {
@@ -264,7 +264,7 @@ export const dictionaries = {
       ],
       "combineLabel": "Комбинирование числовых разрядов",
       "actions": {
-        "label": "Количество действий",
+        "label": "Количество чисел",
         "infinityLabel": "∞"
       },
       "examples": {
@@ -299,7 +299,7 @@ export const dictionaries = {
       "list": {
         "digits": "Разрядность",
         "combine": "Комбинирование",
-        "actions": "Количество действий",
+        "actions": "Количество чисел",
         "examples": "Количество примеров"
       },
       "boolean": {
@@ -377,7 +377,7 @@ export const dictionaries = {
       ],
       "combineLabel": "Комбінування числових розрядів",
       "actions": {
-        "label": "Кількість дій",
+        "label": "Кількість чисел",
         "infinityLabel": "∞"
       },
       "examples": {
@@ -412,7 +412,7 @@ export const dictionaries = {
       "list": {
         "digits": "Розрядність",
         "combine": "Комбінування",
-        "actions": "Кількість дій",
+        "actions": "Кількість чисел",
         "examples": "Кількість прикладів"
       },
       "boolean": {

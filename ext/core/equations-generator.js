@@ -12,7 +12,9 @@ export class EquationGenerator {
       division: false
     };
     this.digitRange = parseInt(settings.digits) || 1;
-    this.actionsCount = settings.actionsCount || 2;
+    // Читаем из settings.actions.count (обновляется UI) или из actionsCount (старое значение)
+    this.actionsCount = settings.actions?.count || settings.actionsCount || 2;
+    this.actionsInfinite = settings.actions?.infinite || false;
     this.unknownPosition = settings.unknownPosition || 'random';
     this.combineDigits = settings.combineLevels || false;
   }
@@ -43,18 +45,23 @@ export class EquationGenerator {
    * @private
    */
   _tryGenerate() {
-    // 1. Определяем количество действий
+    // 1. Определяем количество действий (чисел/операндов)
     const actionsCount = this._getActionsCount();
 
-    // 2. Генерируем результат уравнения
+    // 2. Количество операторов = количество чисел - 1
+    // Например: 2 числа (X + 1) → 1 оператор
+    //           3 числа (X + 1 + 2) → 2 оператора
+    const operatorsCount = Math.max(1, actionsCount - 1);
+
+    // 3. Генерируем результат уравнения
     const result = this._generateNumber();
 
-    // 3. Генерируем цепочку действий НАЗАД от результата
-    const chain = this._generateChain(result, actionsCount);
+    // 4. Генерируем цепочку действий НАЗАД от результата
+    const chain = this._generateChain(result, operatorsCount);
 
     if (!chain) return null;
 
-    // 4. Определяем позицию неизвестного
+    // 5. Определяем позицию неизвестного
     const unknownIndex = this._getUnknownPosition(chain.length + 1);
 
     // 5. Извлекаем значение неизвестного
@@ -77,16 +84,19 @@ export class EquationGenerator {
   }
 
   /**
-   * Определяет количество действий для примера
+   * Определяет количество действий (чисел/операндов) для примера
    * @private
    */
   _getActionsCount() {
-    if (typeof this.actionsCount === 'number') {
-      return this.actionsCount;
+    // Если включен режим "бесконечность", выбираем случайное от 2 до 6 чисел
+    // (что даст от 1 до 5 операторов)
+    if (this.actionsInfinite) {
+      return Math.floor(Math.random() * 5) + 2;
     }
 
-    // Если "бесконечность", выбираем случайное от 2 до 5
-    return Math.floor(Math.random() * 4) + 2;
+    // Иначе используем заданное количество (минимум 2 числа)
+    const count = typeof this.actionsCount === 'number' ? this.actionsCount : 2;
+    return Math.max(2, count);
   }
 
   /**
