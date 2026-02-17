@@ -12,8 +12,8 @@ let currentState = {
   settings: {
     digits: "1",
     combineLevels: false,
-    actions: { count: 1, infinite: false },
-    examples: { count: 2, infinite: false },
+    actions: { count: 2, infinite: false },
+    examples: { count: 10, infinite: false },
     toggles: {
       fractions: false,
       round: false,
