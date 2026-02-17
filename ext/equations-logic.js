@@ -42,11 +42,15 @@ export function mountTrainerUI(container, context) {
     generator: new EquationGenerator(settings),
     equationView: new EquationView(layout.equationContainer),
     startTime: Date.now(),
-    isFinished: false
+    isFinished: false,
+    timerInterval: null
   };
 
   // Обновляем счётчики
   _updateCounters(layout, trainingState, t);
+
+  // Запускаем таймер
+  _startTimer(trainingState, layout);
 
   // Генерируем и показываем первый пример
   _nextExample(trainingState, layout, t, settings);
@@ -68,6 +72,8 @@ export function mountTrainerUI(container, context) {
   layout.exitButton.addEventListener('click', () => {
     logger.info(CONTEXT, 'Exit button clicked');
 
+    _stopTimer(trainingState);
+
     // Отправляем событие TRAINING_FINISH с phase="exit"
     eventBus.emit(EVENTS.TRAINING_FINISH, {
       phase: 'exit',
@@ -86,6 +92,7 @@ export function mountTrainerUI(container, context) {
   // Cleanup функция
   return () => {
     logger.debug(CONTEXT, 'Cleaning up equations trainer');
+    _stopTimer(trainingState);
     if (trainingState.equationView) {
       trainingState.equationView.clear();
     }
@@ -282,6 +289,7 @@ function _finishTraining(trainingState, layout, t) {
   if (trainingState.isFinished) return;
 
   trainingState.isFinished = true;
+  _stopTimer(trainingState);
 
   logger.info(CONTEXT, 'Training finished', {
     correct: trainingState.correctCount,
@@ -343,6 +351,35 @@ function _updateCounters(layout, trainingState, t) {
 
   if (incorrectEl) {
     incorrectEl.textContent = trainingState.incorrectCount;
+  }
+}
+
+/**
+ * Запускает таймер тренировки
+ * @private
+ */
+function _startTimer(trainingState, layout) {
+  const timerEl = layout.root.querySelector('[data-timer="display"]');
+
+  function tick() {
+    const elapsed = Math.floor((Date.now() - trainingState.startTime) / 1000);
+    const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const ss = String(elapsed % 60).padStart(2, '0');
+    if (timerEl) timerEl.textContent = `${mm}:${ss}`;
+  }
+
+  tick();
+  trainingState.timerInterval = setInterval(tick, 1000);
+}
+
+/**
+ * Останавливает таймер тренировки
+ * @private
+ */
+function _stopTimer(trainingState) {
+  if (trainingState.timerInterval !== null) {
+    clearInterval(trainingState.timerInterval);
+    trainingState.timerInterval = null;
   }
 }
 
