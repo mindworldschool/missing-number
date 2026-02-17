@@ -430,12 +430,12 @@ function _showFeedback(layout, isCorrect, message) {
 function _injectStyles() {
   const styleId = 'equations-trainer-styles';
 
-  if (document.getElementById(styleId)) {
-    return; // Стили уже добавлены
+  let style = document.getElementById(styleId);
+  if (!style) {
+    style = document.createElement('style');
+    style.id = styleId;
+    document.head.appendChild(style);
   }
-
-  const style = document.createElement('style');
-  style.id = styleId;
   style.textContent = `
     ${EQUATION_STYLES}
 
@@ -707,6 +707,4 @@ function _injectStyles() {
       }
     }
   `;
-
-  document.head.appendChild(style);
 }

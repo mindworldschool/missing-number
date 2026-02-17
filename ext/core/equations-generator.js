@@ -130,71 +130,65 @@ export class EquationGenerator {
 
   /**
    * Генерирует цепочку действий от результата
+   * Каждый шаг ретраится индивидуально — гарантирует ровно count шагов
    * @private
    */
   _generateChain(result, count) {
+    const availableOps = this._getAvailableOperations();
+    if (availableOps.length === 0) return null;
+
     const steps = [];
     const values = [result];
     let current = result;
 
-    // Получаем доступные операции
-    const availableOps = this._getAvailableOperations();
-    if (availableOps.length === 0) {
-      return null;
-    }
-
     for (let i = 0; i < count; i++) {
-      const op = availableOps[Math.floor(Math.random() * availableOps.length)];
-      let value, nextCurrent;
+      let stepFound = false;
 
-      switch (op) {
-        case 'addition':
-          value = this._generateSmallNumber();
-          nextCurrent = current - value;
-          if (nextCurrent < 1) continue;
-          steps.unshift({ op: '+', value });
+      // Ретраим каждый шаг до 50 раз независимо от остальных
+      for (let attempt = 0; attempt < 50; attempt++) {
+        const op = availableOps[Math.floor(Math.random() * availableOps.length)];
+        let value, nextCurrent, valid = false;
+
+        switch (op) {
+          case 'addition':
+            value = this._generateSmallNumber();
+            nextCurrent = current - value;
+            valid = nextCurrent >= 1;
+            break;
+
+          case 'subtraction':
+            value = this._generateSmallNumber();
+            nextCurrent = current + value;
+            valid = nextCurrent <= Math.pow(10, this.digitRange + 1);
+            break;
+
+          case 'multiplication':
+            value = Math.floor(Math.random() * 9) + 2;
+            nextCurrent = current % value === 0 ? current / value : 0;
+            valid = nextCurrent >= 1;
+            break;
+
+          case 'division':
+            value = Math.floor(Math.random() * 9) + 2;
+            nextCurrent = current * value;
+            valid = nextCurrent <= Math.pow(10, this.digitRange + 1);
+            break;
+        }
+
+        if (valid) {
+          const opSymbol = { addition: '+', subtraction: '−', multiplication: '×', division: '÷' };
+          steps.unshift({ op: opSymbol[op], value });
+          current = nextCurrent;
+          values.unshift(current);
+          stepFound = true;
           break;
-
-        case 'subtraction':
-          value = this._generateSmallNumber();
-          nextCurrent = current + value;
-          if (nextCurrent > Math.pow(10, this.digitRange + 1)) continue;
-          steps.unshift({ op: '−', value });
-          break;
-
-        case 'multiplication':
-          value = Math.floor(Math.random() * 9) + 2;
-          if (current % value !== 0) continue;
-          nextCurrent = current / value;
-          if (nextCurrent < 1) continue;
-          steps.unshift({ op: '×', value });
-          break;
-
-        case 'division':
-          value = Math.floor(Math.random() * 9) + 2;
-          nextCurrent = current * value;
-          if (nextCurrent > Math.pow(10, this.digitRange + 1)) continue;
-          steps.unshift({ op: '÷', value });
-          break;
-
-        default:
-          continue;
+        }
       }
 
-      current = nextCurrent;
-      values.unshift(current);
+      if (!stepFound) return null;
     }
 
-    // Проверяем, что сгенерировали нужное количество шагов
-    if (steps.length !== count) {
-      return null;
-    }
-
-    return {
-      steps,
-      values,
-      startValue: current
-    };
+    return { steps, values, startValue: current };
   }
 
   /**
