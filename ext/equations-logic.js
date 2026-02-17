@@ -26,7 +26,7 @@ export function mountTrainerUI(container, context) {
   _injectStyles();
 
   // Создаём основной layout
-  const layout = _createLayout(t);
+  const layout = _createLayout(t, settings);
   container.appendChild(layout.root);
 
   // Инициализируем состояние тренировки
@@ -103,7 +103,7 @@ export function mountTrainerUI(container, context) {
  * Создаёт layout тренажёра
  * @private
  */
-function _createLayout(t) {
+function _createLayout(t, settings) {
   const root = document.createElement('div');
   root.className = 'trainer-container';
 
@@ -122,7 +122,13 @@ function _createLayout(t) {
   answerLabel.textContent = t('trainer.answerLabel') || 'Відповідь:';
 
   const input = document.createElement('input');
-  input.type = 'number';
+  const isFractions = settings?.toggles?.fractions;
+  if (isFractions) {
+    input.type = 'text';
+    input.inputMode = 'decimal';
+  } else {
+    input.type = 'number';
+  }
   input.className = 'trainer-answer-input';
   input.placeholder = '0';
   input.autofocus = true;
@@ -243,15 +249,20 @@ function _nextExample(trainingState, layout, t, settings) {
 function _handleSubmit(trainingState, layout, t, settings) {
   if (trainingState.isFinished) return;
 
-  const userAnswer = parseInt(layout.input.value, 10);
+  const isFractions = settings?.toggles?.fractions;
+  const rawValue = layout.input.value.trim().replace(',', '.');
+  const userAnswer = isFractions ? parseFloat(rawValue) : parseInt(rawValue, 10);
 
   // Валидация
-  if (isNaN(userAnswer) || layout.input.value.trim() === '') {
+  if (isNaN(userAnswer) || rawValue === '') {
     _showFeedback(layout, false, t('trainer.pleaseEnterNumber') || 'Будь ласка, введіть число');
     return;
   }
 
-  const isCorrect = userAnswer === trainingState.currentExample.answer;
+  const correctAnswer = trainingState.currentExample.answer;
+  const isCorrect = isFractions
+    ? Math.abs(userAnswer - correctAnswer) < Math.pow(10, -(settings.fractionDecimals || 1))
+    : userAnswer === correctAnswer;
 
   logger.debug(CONTEXT, 'User answer:', userAnswer, 'Correct:', trainingState.currentExample.answer, 'Is correct:', isCorrect);
 

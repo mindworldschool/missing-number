@@ -24,6 +24,8 @@ export class EquationGenerator {
     this.actionsInfinite = settings.actions?.infinite || false;
     this.unknownPosition = settings.unknownPosition || 'random';
     this.combineDigits = settings.combineLevels || false;
+    this.fractions = settings.toggles?.fractions || false;
+    this.fractionDecimals = settings.fractionDecimals || 1;
   }
 
   /**
@@ -70,25 +72,35 @@ export class EquationGenerator {
           break;
 
         case 'subtraction':
-          acc = acc - num;
-          // Промежуточный и финальный результат всегда >= 1
-          if (acc < 1) return null;
+          acc = this.fractions ? this._round(acc - num) : acc - num;
+          if (acc < (this.fractions ? 0.01 : 1)) return null;
           break;
 
         case 'multiplication':
-          acc = acc * num;
+          acc = this.fractions ? this._round(acc * num) : acc * num;
           break;
 
         case 'division':
-          // Делитель не ноль, деление строго нацело, результат >= 1
-          if (num === 0 || acc % num !== 0 || acc / num < 1) return null;
-          acc = acc / num;
+          if (num === 0) return null;
+          if (this.fractions) {
+            const divided = this._round(acc / num);
+            if (divided < 0.01) return null;
+            acc = divided;
+          } else {
+            if (acc % num !== 0 || acc / num < 1) return null;
+            acc = acc / num;
+          }
           break;
       }
     }
 
     // Финальная проверка результата
-    if (!Number.isInteger(acc) || acc < 1) return null;
+    if (this.fractions) {
+      acc = this._round(acc);
+      if (acc < 0.01) return null;
+    } else {
+      if (!Number.isInteger(acc) || acc < 1) return null;
+    }
     const result = acc;
 
     // 4. Позиция неизвестного: одно из N чисел (не результат)
@@ -125,13 +137,30 @@ export class EquationGenerator {
   /**
    * Генерирует одно число.
    * combineDigits=true → случайный разряд (1, 2 или 3 знака) в одном примере
+   * fractions=true → добавляет дробную часть с fractionDecimals знаками
    */
   _generateNumber() {
+    let num;
     if (this.combineDigits) {
       const range = Math.floor(Math.random() * 3) + 1; // 1, 2 или 3 разряда
-      return this._numberInRange(range);
+      num = this._numberInRange(range);
+    } else {
+      num = this._numberInRange(this.digitRange);
     }
-    return this._numberInRange(this.digitRange);
+    if (this.fractions) {
+      const factor = Math.pow(10, this.fractionDecimals);
+      const decimalPart = Math.floor(Math.random() * (factor - 1)) + 1; // 1..(factor-1), избегаем .0
+      num = this._round(num + decimalPart / factor);
+    }
+    return num;
+  }
+
+  /**
+   * Округляет число до fractionDecimals знаков после запятой
+   */
+  _round(n) {
+    const factor = Math.pow(10, this.fractionDecimals);
+    return Math.round(n * factor) / factor;
   }
 
   /**
@@ -208,9 +237,9 @@ export class EquationGenerator {
    * Всегда корректен, уважает digitRange и unknownPosition.
    */
   _generateSimple() {
-    const a = this._numberInRange(this.digitRange);
-    const b = this._numberInRange(this.digitRange);
-    const result = a + b;
+    const a = this._generateNumber();
+    const b = this._generateNumber();
+    const result = this.fractions ? this._round(a + b) : a + b;
     const unknownIndex = this.unknownPosition === 'second' ? 1 : 0;
     const numbers = [a, b];
     const ops = ['addition'];

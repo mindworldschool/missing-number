@@ -36,6 +36,7 @@ const defaultState = {
       positive: false,
       negative: false
     },
+    fractionDecimals: 1,
     operations: {
       addition: true,
       subtraction: true,
