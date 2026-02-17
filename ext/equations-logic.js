@@ -437,14 +437,15 @@ function _injectStyles() {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: clamp(18px, 2.5vh, 25px);
+      align-items: center;
+      gap: clamp(14px, 2vh, 20px);
     }
 
     .trainer-answer-label {
       font-size: clamp(18px, 2.5vh, 22px);
       font-weight: 700;
       color: #7d733a;
-      text-align: left;
+      text-align: center;
     }
 
     /* Поле ввода с оранжевой рамкой */
@@ -459,7 +460,6 @@ function _injectStyles() {
       transition: all 0.3s ease;
       background: white;
       box-shadow: 0 5px 16px rgba(255, 124, 0, 0.13);
-      max-width: 60%;
       width: 60%;
     }
 
@@ -472,7 +472,7 @@ function _injectStyles() {
 
     /* Оранжевая кнопка */
     .trainer-submit-button {
-      padding: clamp(12px, 1.8vh, 16px) clamp(28px, 4vw, 52px);
+      padding: clamp(12px, 1.8vh, 16px) 0;
       font-size: clamp(16px, 2.2vh, 20px);
       font-weight: 700;
       background: linear-gradient(135deg, #FF7C00, #ff9a2b);
@@ -484,6 +484,7 @@ function _injectStyles() {
       box-shadow: 0 8px 18px rgba(255, 124, 0, 0.3);
       text-transform: uppercase;
       letter-spacing: 0.02em;
+      width: 54%;
     }
 
     .trainer-submit-button:hover {
