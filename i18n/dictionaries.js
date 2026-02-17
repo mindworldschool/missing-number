@@ -46,6 +46,7 @@ export const dictionaries = {
         "infinityLabel": "∞"
       },
       "advancedLabel": "Advanced options",
+      "fractionDecimalsLabel": "Decimal places",
       "toggles": {
         "fractions": "Fractions",
         "round": "Round numbers",
@@ -159,6 +160,7 @@ export const dictionaries = {
         "infinityLabel": "∞"
       },
       "advancedLabel": "Opciones avanzadas",
+      "fractionDecimalsLabel": "Decimales",
       "toggles": {
         "fractions": "Números fraccionarios",
         "round": "Números redondos",
@@ -272,6 +274,7 @@ export const dictionaries = {
         "infinityLabel": "∞"
       },
       "advancedLabel": "Расширенные параметры",
+      "fractionDecimalsLabel": "Знаков после запятой",
       "toggles": {
         "fractions": "Дробные числа",
         "round": "Круглые числа",
@@ -385,6 +388,7 @@ export const dictionaries = {
         "infinityLabel": "∞"
       },
       "advancedLabel": "Розширені параметри",
+      "fractionDecimalsLabel": "Знаків після коми",
       "toggles": {
         "fractions": "Дробові числа",
         "round": "Круглі числа",

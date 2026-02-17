@@ -232,12 +232,54 @@ export function renderSettings(container, { t, state, updateSettings, navigate }
 
   const toggleTranslations = t("settings.toggles");
   Object.entries(toggleTranslations).forEach(([key, label]) => {
+    let decimalsRow = null;
+
     const toggle = createCheckbox(label, Boolean(settingsState.toggles[key]), (checked) => {
       updateSettings({
         toggles: { ...state.settings.toggles, [key]: checked }
       });
+      if (key === 'fractions' && decimalsRow) {
+        decimalsRow.style.display = checked ? 'flex' : 'none';
+      }
     }, "toggle-pill");
     toggleList.appendChild(toggle);
+
+    if (key === 'fractions') {
+      decimalsRow = document.createElement('div');
+      decimalsRow.style.cssText = 'display:' + (settingsState.toggles.fractions ? 'flex' : 'none') + '; align-items:center; gap:10px; padding:6px 0 6px 4px;';
+
+      const decimalsLabel = document.createElement('span');
+      decimalsLabel.textContent = t('settings.fractionDecimalsLabel');
+      decimalsLabel.style.cssText = 'font-size:14px; color:#7d733a; white-space:nowrap;';
+      decimalsRow.appendChild(decimalsLabel);
+
+      [1, 2].forEach(n => {
+        const btn = document.createElement('label');
+        btn.className = 'toggle-pill' + (((settingsState.fractionDecimals || 1) === n) ? ' is-active' : '');
+        btn.style.cssText = 'font-size:14px; padding:4px 14px; cursor:pointer;';
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'fractionDecimals';
+        radio.value = String(n);
+        radio.checked = (settingsState.fractionDecimals || 1) === n;
+        radio.style.display = 'none';
+
+        radio.addEventListener('change', () => {
+          updateSettings({ fractionDecimals: n });
+          decimalsRow.querySelectorAll('label').forEach(l => l.classList.remove('is-active'));
+          btn.classList.add('is-active');
+        });
+
+        const text = document.createElement('span');
+        text.textContent = String(n);
+
+        btn.append(radio, text);
+        decimalsRow.appendChild(btn);
+      });
+
+      toggleList.appendChild(decimalsRow);
+    }
   });
   advancedSection.appendChild(toggleList);
   form.appendChild(advancedSection);
