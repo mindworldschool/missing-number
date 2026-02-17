@@ -165,8 +165,8 @@ export function renderSettings(container, { t, state, updateSettings, navigate }
   const settingsState = state.settings || {
     digits: "1",
     combineLevels: false,
-    actions: { count: 1, infinite: false },
-    examples: { count: 2, infinite: false },
+    actions: { count: 2, infinite: false },
+    examples: { count: 10, infinite: false },
     toggles: {},
     operations: { addition: true, subtraction: true, multiplication: false, division: false },
     actionsCount: 2,
