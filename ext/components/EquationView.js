@@ -194,6 +194,9 @@ export const EQUATION_STYLES = `
   gap: 20px;
   padding: 20px;
   min-height: 120px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .equation-text {
@@ -205,6 +208,9 @@ export const EQUATION_STYLES = `
   font-weight: 600;
   gap: 8px;
   row-gap: 12px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .equation-number {
