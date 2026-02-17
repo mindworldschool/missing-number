@@ -1,6 +1,14 @@
 /**
  * Генератор уравнений с одним неизвестным (🦁)
- * Создаёт примеры вида: 🦁 + 5 − 3 = 9
+ *
+ * Логика: ПРЯМАЯ генерация (forward)
+ *   1. Сгенерировать N чисел в нужном диапазоне разряда
+ *   2. Выбрать N-1 операций из разрешённых
+ *   3. Вычислить результат слева направо, проверяя каждый шаг
+ *   4. Скрыть одно из N чисел (не результат!) согласно настройке позиции
+ *
+ * Диапазоны разрядов: 1→1-9, 2→10-99, 3→100-999, 4→1000-9999
+ * Ноль исключён: делить на 0 нельзя, умножать на 0 неинтересно.
  */
 
 export class EquationGenerator {
@@ -12,7 +20,6 @@ export class EquationGenerator {
       division: false
     };
     this.digitRange = parseInt(settings.digits) || 1;
-    // Читаем из settings.actions.count (обновляется UI) или из actionsCount (старое значение)
     this.actionsCount = settings.actions?.count || settings.actionsCount || 2;
     this.actionsInfinite = settings.actions?.infinite || false;
     this.unknownPosition = settings.unknownPosition || 'random';
@@ -20,338 +27,202 @@ export class EquationGenerator {
   }
 
   /**
-   * Генерирует одно уравнение
-   * @returns {Object} { text, result, answer, steps, expression }
+   * Генерирует одно уравнение.
+   * До 200 попыток, затем запасной вариант (сложение в нужном диапазоне).
+   * @returns {Object} { text, result, answer, expression, unknownIndex, numbers, ops }
    */
   generate() {
-    const maxAttempts = 100;
-    let attempt = 0;
-
-    while (attempt < maxAttempts) {
-      attempt++;
+    for (let attempt = 0; attempt < 200; attempt++) {
       const equation = this._tryGenerate();
-
-      if (equation && this._isValid(equation)) {
-        return equation;
-      }
+      if (equation) return equation;
     }
-
-    // Запасной вариант: простое уравнение
     return this._generateSimple();
   }
 
-  /**
-   * Попытка генерации уравнения
-   * @private
-   */
+  // ─── Основная попытка ───────────────────────────────────────────────────────
+
   _tryGenerate() {
-    // 1. Определяем количество действий (чисел/операндов)
-    const actionsCount = this._getActionsCount();
+    const N = this._getActionsCount();
+    const availableOps = this._getAvailableOperations();
+    if (availableOps.length === 0) return null;
 
-    // 2. Количество операторов = количество чисел - 1
-    // Например: 2 числа (X + 1) → 1 оператор
-    //           3 числа (X + 1 + 2) → 2 оператора
-    const operatorsCount = Math.max(1, actionsCount - 1);
+    // 1. Генерируем N чисел в выбранном диапазоне разряда
+    const numbers = [];
+    for (let i = 0; i < N; i++) {
+      numbers.push(this._generateNumber());
+    }
 
-    // 3. Генерируем результат уравнения
-    const result = this._generateNumber();
+    // 2. Выбираем N-1 операций случайно из разрешённых
+    const ops = [];
+    for (let i = 0; i < N - 1; i++) {
+      ops.push(availableOps[Math.floor(Math.random() * availableOps.length)]);
+    }
 
-    // 4. Генерируем цепочку действий НАЗАД от результата
-    const chain = this._generateChain(result, operatorsCount);
+    // 3. Вычисляем результат слева направо, проверяем каждый шаг
+    let acc = numbers[0];
+    for (let i = 0; i < ops.length; i++) {
+      const op = ops[i];
+      const num = numbers[i + 1];
 
-    if (!chain) return null;
+      switch (op) {
+        case 'addition':
+          acc = acc + num;
+          break;
 
-    // 5. Определяем позицию неизвестного
-    const unknownIndex = this._getUnknownPosition(chain.length + 1);
+        case 'subtraction':
+          acc = acc - num;
+          // Промежуточный и финальный результат всегда >= 1
+          if (acc < 1) return null;
+          break;
 
-    // 5. Извлекаем значение неизвестного
-    const answer = unknownIndex === 0
-      ? chain.startValue
-      : chain.values[unknownIndex - 1];
+        case 'multiplication':
+          acc = acc * num;
+          break;
 
-    // 6. Формируем выражение и текст
-    const expression = this._buildExpression(chain, unknownIndex);
+        case 'division':
+          // Делитель не ноль, деление строго нацело, результат >= 1
+          if (num === 0 || acc % num !== 0 || acc / num < 1) return null;
+          acc = acc / num;
+          break;
+      }
+    }
+
+    // Финальная проверка результата
+    if (!Number.isInteger(acc) || acc < 1) return null;
+    const result = acc;
+
+    // 4. Позиция неизвестного: одно из N чисел (не результат)
+    const unknownIndex = this._getUnknownPosition(N);
+
+    // 5. Собираем выражение и текст
+    const expression = this._buildExpression(numbers, ops, unknownIndex);
     const text = this._buildText(expression, result);
 
     return {
       text,
       result,
-      answer,
-      steps: chain.steps,
+      answer: numbers[unknownIndex], // ответ — это само скрытое число
       expression,
-      unknownIndex
+      unknownIndex,
+      numbers,
+      ops
     };
   }
 
+  // ─── Вспомогательные ───────────────────────────────────────────────────────
+
   /**
-   * Определяет количество действий (чисел/операндов) для примера
-   * @private
+   * Количество чисел (операндов) в примере
    */
   _getActionsCount() {
-    // Если включен режим "бесконечность", выбираем случайное от 2 до 6 чисел
-    // (что даст от 1 до 5 операторов)
     if (this.actionsInfinite) {
-      return Math.floor(Math.random() * 5) + 2;
+      return Math.floor(Math.random() * 5) + 2; // 2-6
     }
-
-    // Иначе используем заданное количество (минимум 2 числа)
     const count = typeof this.actionsCount === 'number' ? this.actionsCount : 2;
     return Math.max(2, count);
   }
 
   /**
-   * Генерирует число в заданном диапазоне
-   * @private
+   * Генерирует одно число.
+   * combineDigits=true → случайный разряд (1, 2 или 3 знака) в одном примере
    */
   _generateNumber() {
     if (this.combineDigits) {
-      // Комбинированный режим: от 1 до максимального числа
-      const max = Math.pow(10, this.digitRange) - 1;
-      return Math.floor(Math.random() * max) + 1;
-    } else {
-      // Фиксированная разрядность
-      if (this.digitRange === 1) {
-        return Math.floor(Math.random() * 9) + 1;
-      }
-      const min = Math.pow(10, this.digitRange - 1);
-      const max = Math.pow(10, this.digitRange) - 1;
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+      const range = Math.floor(Math.random() * 3) + 1; // 1, 2 или 3 разряда
+      return this._numberInRange(range);
     }
+    return this._numberInRange(this.digitRange);
   }
 
   /**
-   * Генерирует маленькое число для операций
-   * @private
+   * Случайное число в диапазоне разряда range:
+   *   1 → 1-9
+   *   2 → 10-99
+   *   3 → 100-999
+   *   4 → 1000-9999
    */
-  _generateSmallNumber() {
-    const max = Math.min(20, Math.pow(10, this.digitRange));
-    return Math.floor(Math.random() * (max - 1)) + 1;
+  _numberInRange(range) {
+    const r = Math.max(1, range);
+    if (r === 1) return Math.floor(Math.random() * 9) + 1; // 1-9
+    const min = Math.pow(10, r - 1);      // 10, 100, 1000 ...
+    const max = Math.pow(10, r) - 1;      // 99, 999, 9999 ...
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   /**
-   * Генерирует цепочку действий от результата
-   * Каждый шаг ретраится индивидуально — гарантирует ровно count шагов
-   * @private
-   */
-  _generateChain(result, count) {
-    const availableOps = this._getAvailableOperations();
-    if (availableOps.length === 0) return null;
-
-    const steps = [];
-    const values = [result];
-    let current = result;
-
-    for (let i = 0; i < count; i++) {
-      let stepFound = false;
-
-      // Ретраим каждый шаг до 50 раз независимо от остальных
-      for (let attempt = 0; attempt < 50; attempt++) {
-        const op = availableOps[Math.floor(Math.random() * availableOps.length)];
-        let value, nextCurrent, valid = false;
-
-        switch (op) {
-          case 'addition':
-            value = this._generateSmallNumber();
-            nextCurrent = current - value;
-            valid = nextCurrent >= 1;
-            break;
-
-          case 'subtraction':
-            value = this._generateSmallNumber();
-            nextCurrent = current + value;
-            valid = nextCurrent <= Math.pow(10, this.digitRange + 1);
-            break;
-
-          case 'multiplication':
-            value = Math.floor(Math.random() * 9) + 2;
-            nextCurrent = current % value === 0 ? current / value : 0;
-            valid = nextCurrent >= 1;
-            break;
-
-          case 'division':
-            value = Math.floor(Math.random() * 9) + 2;
-            nextCurrent = current * value;
-            valid = nextCurrent <= Math.pow(10, this.digitRange + 1);
-            break;
-        }
-
-        if (valid) {
-          const opSymbol = { addition: '+', subtraction: '−', multiplication: '×', division: '÷' };
-          steps.unshift({ op: opSymbol[op], value });
-          current = nextCurrent;
-          values.unshift(current);
-          stepFound = true;
-          break;
-        }
-      }
-
-      if (!stepFound) return null;
-    }
-
-    return { steps, values, startValue: current };
-  }
-
-  /**
-   * Получает список доступных операций
-   * @private
+   * Список операций, разрешённых в настройках
    */
   _getAvailableOperations() {
     const ops = [];
-
-    if (this.operations.addition) ops.push('addition');
-    if (this.operations.subtraction) ops.push('subtraction');
+    if (this.operations.addition)       ops.push('addition');
+    if (this.operations.subtraction)    ops.push('subtraction');
     if (this.operations.multiplication) ops.push('multiplication');
-    if (this.operations.division) ops.push('division');
-
+    if (this.operations.division)       ops.push('division');
     return ops;
   }
 
   /**
-   * Определяет позицию неизвестного
-   * @private
+   * Индекс скрытого числа (0 … N-1, не результат)
    */
   _getUnknownPosition(totalNumbers) {
     switch (this.unknownPosition) {
-      case 'first':
-        return 0;
-      case 'second':
-        return Math.min(1, totalNumbers - 1);
+      case 'first':  return 0;
+      case 'second': return Math.min(1, totalNumbers - 1);
       case 'random':
-      default:
-        return Math.floor(Math.random() * totalNumbers);
+      default:       return Math.floor(Math.random() * totalNumbers);
     }
   }
 
   /**
-   * Строит выражение с неизвестным
-   * @private
+   * Строит массив частей выражения для EquationView
+   * Формат: [{ type: 'number'|'operator'|'unknown', value }]
    */
-  _buildExpression(chain, unknownIndex) {
+  _buildExpression(numbers, ops, unknownIndex) {
+    const opSymbols = {
+      addition: '+', subtraction: '−',
+      multiplication: '×', division: '÷'
+    };
     const parts = [];
-
-    // Добавляем начальное значение или неизвестное
-    parts.push({
-      type: unknownIndex === 0 ? 'unknown' : 'number',
-      value: unknownIndex === 0 ? '🦁' : chain.startValue
-    });
-
-    // Добавляем операции
-    chain.steps.forEach((step, index) => {
-      parts.push({
-        type: 'operator',
-        value: step.op
-      });
-
-      const isUnknown = unknownIndex === index + 1;
-      parts.push({
-        type: isUnknown ? 'unknown' : 'number',
-        value: isUnknown ? '🦁' : step.value
-      });
-    });
-
+    for (let i = 0; i < numbers.length; i++) {
+      if (i > 0) {
+        parts.push({ type: 'operator', value: opSymbols[ops[i - 1]] });
+      }
+      parts.push(
+        i === unknownIndex
+          ? { type: 'unknown', value: '🦁' }
+          : { type: 'number',  value: numbers[i] }
+      );
+    }
     return parts;
   }
 
   /**
-   * Строит текстовое представление уравнения
-   * @private
+   * Текстовое представление уравнения (для логов / wrongExamples)
    */
   _buildText(expression, result) {
-    const text = expression.map(part => part.value).join(' ');
-    return `${text} = ${result}`;
+    return expression.map(p => p.value).join(' ') + ' = ' + result;
   }
 
   /**
-   * Проверяет валидность уравнения
-   * @private
-   */
-  _isValid(equation) {
-    if (!equation || !equation.answer || !equation.result) {
-      return false;
-    }
-
-    // Проверяем, что ответ положительный
-    if (equation.answer < 1) {
-      return false;
-    }
-
-    // Проверяем, что ответ - целое число
-    if (!Number.isInteger(equation.answer)) {
-      return false;
-    }
-
-    // Проверяем, что результат положительный
-    if (equation.result < 1) {
-      return false;
-    }
-
-    // Проверяем правильность решения
-    const calculated = this._calculate(equation.expression, equation.answer);
-    if (calculated !== equation.result) {
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Вычисляет результат выражения
-   * @private
-   */
-  _calculate(expression, unknownValue) {
-    let result = null;
-    let currentOp = null;
-
-    for (const part of expression) {
-      if (part.type === 'operator') {
-        currentOp = part.value;
-      } else {
-        const value = part.type === 'unknown' ? unknownValue : part.value;
-
-        if (result === null) {
-          result = value;
-        } else {
-          switch (currentOp) {
-            case '+':
-              result += value;
-              break;
-            case '−':
-              result -= value;
-              break;
-            case '×':
-              result *= value;
-              break;
-            case '÷':
-              result /= value;
-              break;
-          }
-        }
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Генерирует простое уравнение (запасной вариант)
-   * @private
+   * Запасной вариант: простое сложение двух чисел в нужном диапазоне.
+   * Всегда корректен, уважает digitRange и unknownPosition.
    */
   _generateSimple() {
-    const a = Math.floor(Math.random() * 10) + 1;
-    const b = Math.floor(Math.random() * 10) + 1;
+    const a = this._numberInRange(this.digitRange);
+    const b = this._numberInRange(this.digitRange);
     const result = a + b;
-
+    const unknownIndex = this.unknownPosition === 'second' ? 1 : 0;
+    const numbers = [a, b];
+    const ops = ['addition'];
+    const expression = this._buildExpression(numbers, ops, unknownIndex);
     return {
-      text: `🦁 + ${b} = ${result}`,
+      text: this._buildText(expression, result),
       result,
-      answer: a,
-      steps: [{ op: '+', value: b }],
-      expression: [
-        { type: 'unknown', value: '🦁' },
-        { type: 'operator', value: '+' },
-        { type: 'number', value: b }
-      ],
-      unknownIndex: 0
+      answer: numbers[unknownIndex],
+      expression,
+      unknownIndex,
+      numbers,
+      ops
     };
   }
 }
