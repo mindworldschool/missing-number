@@ -405,8 +405,8 @@ function _injectStyles() {
     /* Mind Abacus стиль - двухколоночный layout: СЛЕВА (пример+ввод+кнопка) СПРАВА (счетчики+прогресс) */
     .trainer-container {
       display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: clamp(30px, 4vw, 50px);
+      grid-template-columns: 65% 35%;
+      gap: clamp(20px, 3vw, 36px);
       padding: clamp(20px, 3vh, 40px);
       max-width: 1400px;
       margin: 0 auto;
@@ -447,31 +447,33 @@ function _injectStyles() {
       text-align: left;
     }
 
-    /* Большое поле ввода с оранжевой рамкой */
+    /* Поле ввода с оранжевой рамкой */
     .trainer-answer-input {
-      padding: clamp(20px, 3vh, 30px);
-      font-size: clamp(36px, 6vh, 56px);
-      border: 4px solid #FF7C00;
-      border-radius: 16px;
+      padding: clamp(12px, 1.8vh, 18px) clamp(16px, 2vw, 24px);
+      font-size: clamp(28px, 4.5vh, 42px);
+      border: 3px solid #FF7C00;
+      border-radius: 14px;
       font-family: 'Baloo 2', cursive;
       font-weight: 700;
       text-align: center;
       transition: all 0.3s ease;
       background: white;
-      box-shadow: 0 8px 24px rgba(255, 124, 0, 0.15);
+      box-shadow: 0 5px 16px rgba(255, 124, 0, 0.13);
+      max-width: 60%;
+      width: 60%;
     }
 
     .trainer-answer-input:focus {
       outline: none;
       border-color: #ff9a2b;
-      box-shadow: 0 8px 32px rgba(255, 124, 0, 0.25), 0 0 0 6px rgba(255, 124, 0, 0.1);
+      box-shadow: 0 6px 24px rgba(255, 124, 0, 0.22), 0 0 0 4px rgba(255, 124, 0, 0.1);
       transform: translateY(-2px);
     }
 
-    /* Большая оранжевая кнопка */
+    /* Оранжевая кнопка */
     .trainer-submit-button {
-      padding: clamp(18px, 3vh, 24px) clamp(40px, 6vw, 80px);
-      font-size: clamp(20px, 3vh, 28px);
+      padding: clamp(12px, 1.8vh, 16px) clamp(28px, 4vw, 52px);
+      font-size: clamp(16px, 2.2vh, 20px);
       font-weight: 700;
       background: linear-gradient(135deg, #FF7C00, #ff9a2b);
       color: #fff8ec;
@@ -479,20 +481,20 @@ function _injectStyles() {
       border-radius: 999px;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 12px 28px rgba(255, 124, 0, 0.35);
+      box-shadow: 0 8px 18px rgba(255, 124, 0, 0.3);
       text-transform: uppercase;
       letter-spacing: 0.02em;
     }
 
     .trainer-submit-button:hover {
       background: linear-gradient(135deg, #e06600, #ff7c00);
-      box-shadow: 0 16px 36px rgba(255, 124, 0, 0.4);
-      transform: translateY(-3px);
+      box-shadow: 0 12px 26px rgba(255, 124, 0, 0.38);
+      transform: translateY(-2px);
     }
 
     .trainer-submit-button:active {
       transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(255, 124, 0, 0.3);
+      box-shadow: 0 6px 14px rgba(255, 124, 0, 0.28);
     }
 
     /* Правая панель - счетчики и прогресс */
@@ -517,32 +519,34 @@ function _injectStyles() {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: clamp(15px, 2vh, 20px);
-      border-radius: 12px;
-      font-size: clamp(16px, 2vh, 20px);
-      font-weight: 700;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      gap: 4px;
+      padding: clamp(8px, 1.2vh, 12px);
+      border-radius: 10px;
+      font-size: clamp(12px, 1.4vh, 15px);
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     }
 
     .trainer-counter--correct {
-      background: linear-gradient(135deg, #10b981, #34d399);
-      color: white;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1.5px solid rgba(16, 185, 129, 0.3);
+      color: #047857;
     }
 
     .trainer-counter--incorrect {
-      background: linear-gradient(135deg, #ef4444, #f87171);
-      color: white;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1.5px solid rgba(239, 68, 68, 0.25);
+      color: #b91c1c;
     }
 
     .trainer-counter__value {
-      font-size: clamp(32px, 5vh, 48px);
+      font-size: clamp(20px, 2.8vh, 30px);
       font-family: 'Baloo 2', cursive;
     }
 
     .trainer-counter__label {
-      font-size: clamp(20px, 3vh, 28px);
-      opacity: 0.95;
+      font-size: clamp(14px, 1.8vh, 18px);
+      opacity: 0.8;
     }
 
     /* Прогресс-бар в стиле Mind Abacus */

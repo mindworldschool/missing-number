@@ -200,7 +200,7 @@ export const EQUATION_STYLES = `
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 48px;
   font-weight: 600;
   gap: 8px;
 }
@@ -224,8 +224,8 @@ export const EQUATION_STYLES = `
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 72px;
+  height: 72px;
   animation: leo-pulse 2s infinite;
 }
 
