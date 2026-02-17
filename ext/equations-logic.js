@@ -459,15 +459,17 @@ function _injectStyles() {
     }
 
     .trainer-equation-area {
-      min-height: clamp(180px, 28vh, 280px);
+      min-height: clamp(100px, 16vh, 160px);
+      height: auto;
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(255, 124, 0, 0.04);
       border-radius: 16px;
-      padding: clamp(25px, 4vh, 45px);
+      padding: clamp(20px, 3.5vh, 40px);
       border: 2px solid rgba(255, 124, 0, 0.1);
+      box-sizing: border-box;
     }
 
     .trainer-answer-section {

@@ -198,11 +198,13 @@ export const EQUATION_STYLES = `
 
 .equation-text {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   font-size: 48px;
   font-weight: 600;
   gap: 8px;
+  row-gap: 12px;
 }
 
 .equation-number {
