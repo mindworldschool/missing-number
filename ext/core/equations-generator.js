@@ -27,6 +27,8 @@ export class EquationGenerator {
     this.fractions = settings.toggles?.fractions || false;
     this.fractionDecimals = settings.fractionDecimals || 1;
     this.roundNumbers = settings.toggles?.round || false;
+    this.positiveAnswer = settings.toggles?.positive || false;
+    this.negativeAnswer = settings.toggles?.negative || false;
   }
 
   /**
@@ -35,11 +37,14 @@ export class EquationGenerator {
    * @returns {Object} { text, result, answer, expression, unknownIndex, numbers, ops }
    */
   generate() {
+    const tryFn = this.negativeAnswer
+      ? () => this._tryGenerateNegative()
+      : () => this._tryGenerate();
     for (let attempt = 0; attempt < 200; attempt++) {
-      const equation = this._tryGenerate();
+      const equation = tryFn();
       if (equation) return equation;
     }
-    return this._generateSimple();
+    return this.negativeAnswer ? this._generateSimpleNegative() : this._generateSimple();
   }
 
   // ─── Основная попытка ───────────────────────────────────────────────────────
@@ -268,6 +273,146 @@ export class EquationGenerator {
       text: this._buildText(expression, result),
       result,
       answer: numbers[unknownIndex],
+      expression,
+      unknownIndex,
+      numbers,
+      ops
+    };
+  }
+
+  /**
+   * Генерация уравнения с отрицательным скрытым операндом.
+   * Алгоритм: генерируем видимые числа и результат, затем обратным счётом
+   * вычисляем скрытое число и проверяем что оно отрицательное.
+   */
+  _tryGenerateNegative() {
+    const N = this._getActionsCount();
+    const availableOps = this._getAvailableOperations();
+    if (availableOps.length === 0) return null;
+
+    const unknownIndex = this._getUnknownPosition(N);
+
+    // Генерируем видимые операнды (placeholder 0 на месте скрытого)
+    const numbers = [];
+    for (let i = 0; i < N; i++) {
+      numbers.push(i === unknownIndex ? 0 : this._generateNumber());
+    }
+
+    // Выбираем операции
+    const ops = [];
+    for (let i = 0; i < N - 1; i++) {
+      ops.push(availableOps[Math.floor(Math.random() * availableOps.length)]);
+    }
+
+    // Генерируем положительный результат (правая часть уравнения)
+    const result = this._generateNumber();
+
+    // Вычисляем скрытое число обратным счётом
+    let answer = this._solveForUnknown(numbers, ops, unknownIndex, result);
+    if (answer === null || !isFinite(answer) || isNaN(answer)) return null;
+
+    // Округляем для дробей
+    if (this.fractions) answer = this._round(answer);
+
+    // Скрытое число должно быть строго отрицательным
+    if (answer >= 0) return null;
+
+    // Для нецелых ответов без режима дробей — отклоняем
+    if (!this.fractions && !Number.isInteger(answer)) return null;
+
+    // Для круглых чисел — проверяем что ответ тоже кратен нужной степени 10
+    if (this.roundNumbers) {
+      const effectiveRange = Math.max(2, this.digitRange);
+      const multiplier = Math.pow(10, effectiveRange - 1);
+      if (answer % multiplier !== 0) return null;
+    }
+
+    numbers[unknownIndex] = answer;
+    const expression = this._buildExpression(numbers, ops, unknownIndex);
+    const text = this._buildText(expression, result);
+
+    return { text, result, answer, expression, unknownIndex, numbers, ops };
+  }
+
+  /**
+   * Обратный счёт: находит значение numbers[unknownIndex], при котором
+   * уравнение numbers[0] ops[0] numbers[1] ... = result выполняется.
+   *
+   * Алгоритм:
+   *   1. Сворачиваем справа налево от result, инвертируя операции правее unknownIndex → T
+   *   2. Вычисляем левый префикс P (всё левее unknownIndex)
+   *   3. Решаем: P op ? = T
+   */
+  _solveForUnknown(numbers, ops, unknownIndex, result) {
+    const N = numbers.length;
+
+    // Шаг 1: инвертируем правую часть (i от N-1 до unknownIndex+1)
+    let T = result;
+    for (let i = N - 1; i > unknownIndex; i--) {
+      const op = ops[i - 1];
+      const n = numbers[i];
+      switch (op) {
+        case 'addition':       T = T - n; break;
+        case 'subtraction':    T = T + n; break;
+        case 'multiplication':
+          if (n === 0) return null;
+          T = T / n;
+          break;
+        case 'division':       T = T * n; break;
+        default: return null;
+      }
+    }
+
+    // Если неизвестное на первой позиции — T и есть ответ
+    if (unknownIndex === 0) return T;
+
+    // Шаг 2: вычисляем левый префикс P
+    let P = numbers[0];
+    for (let i = 1; i < unknownIndex; i++) {
+      const op = ops[i - 1];
+      const n = numbers[i];
+      switch (op) {
+        case 'addition':      P = P + n; break;
+        case 'subtraction':   P = this.fractions ? this._round(P - n) : P - n; break;
+        case 'multiplication': P = this.fractions ? this._round(P * n) : P * n; break;
+        case 'division':
+          if (n === 0) return null;
+          P = this.fractions ? this._round(P / n) : P / n;
+          break;
+        default: return null;
+      }
+    }
+
+    // Шаг 3: решаем P op ? = T
+    const opU = ops[unknownIndex - 1];
+    switch (opU) {
+      case 'addition':      return T - P;          // P + ? = T
+      case 'subtraction':   return P - T;          // P - ? = T  →  ? = P - T
+      case 'multiplication':
+        if (P === 0) return null;
+        return T / P;                              // P × ? = T
+      case 'division':
+        if (T === 0) return null;
+        return P / T;                              // P ÷ ? = T  →  ? = P / T
+      default: return null;
+    }
+  }
+
+  /**
+   * Запасной вариант для негативного режима: ? + b = 1, ответ = 1 - b < 0.
+   */
+  _generateSimpleNegative() {
+    const result = 1;
+    const b = Math.max(2, this._generateNumber()); // b >= 2 гарантирует ответ < 0
+    const answer = result - b;
+    const numbers = [answer, b];
+    const ops = ['addition'];
+    const unknownIndex = 0;
+    const expression = this._buildExpression(numbers, ops, unknownIndex);
+    return {
+      text: this._buildText(expression, result),
+      result,
+      answer,
       expression,
       unknownIndex,
       numbers,

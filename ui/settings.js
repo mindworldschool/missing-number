@@ -231,6 +231,8 @@ export function renderSettings(container, { t, state, updateSettings, navigate }
   toggleList.className = "toggle-list";
 
   const toggleTranslations = t("settings.toggles");
+  const exclusiveToggleEls = {}; // holds label elements for 'positive' and 'negative'
+
   Object.entries(toggleTranslations).forEach(([key, label]) => {
     let decimalsRow = null;
 
@@ -241,7 +243,27 @@ export function renderSettings(container, { t, state, updateSettings, navigate }
       if (key === 'fractions' && decimalsRow) {
         decimalsRow.style.display = checked ? 'flex' : 'none';
       }
+      // Mutual exclusion: positive ↔ negative
+      if (key === 'positive' || key === 'negative') {
+        const otherKey = key === 'positive' ? 'negative' : 'positive';
+        const otherEl = exclusiveToggleEls[otherKey];
+        if (otherEl) {
+          const otherInput = otherEl.querySelector('input[type="checkbox"]');
+          if (checked) {
+            otherInput.disabled = true;
+            otherEl.classList.add('is-disabled');
+          } else {
+            otherInput.disabled = false;
+            otherEl.classList.remove('is-disabled');
+          }
+        }
+      }
     }, "toggle-pill");
+
+    if (key === 'positive' || key === 'negative') {
+      exclusiveToggleEls[key] = toggle;
+    }
+
     toggleList.appendChild(toggle);
 
     if (key === 'fractions') {
@@ -282,6 +304,19 @@ export function renderSettings(container, { t, state, updateSettings, navigate }
     }
   });
   advancedSection.appendChild(toggleList);
+
+  // Initial mutual-exclusion state on page render
+  if (settingsState.toggles.positive && exclusiveToggleEls.negative) {
+    const el = exclusiveToggleEls.negative;
+    el.querySelector('input[type="checkbox"]').disabled = true;
+    el.classList.add('is-disabled');
+  }
+  if (settingsState.toggles.negative && exclusiveToggleEls.positive) {
+    const el = exclusiveToggleEls.positive;
+    el.querySelector('input[type="checkbox"]').disabled = true;
+    el.classList.add('is-disabled');
+  }
+
   form.appendChild(advancedSection);
 
   // Секция "Операции" для уравнений
