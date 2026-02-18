@@ -7,6 +7,7 @@ import { EquationGenerator } from './core/equations-generator.js';
 import { EquationView, EQUATION_STYLES } from './components/EquationView.js';
 import { eventBus, EVENTS } from '../core/utils/events.js';
 import { logger } from '../core/utils/logger.js';
+import { startAnswerTimer, stopAnswerTimer } from '../js/utils/timer.js';
 
 const CONTEXT = 'EquationsTrainer';
 
@@ -73,6 +74,7 @@ export function mountTrainerUI(container, context) {
     logger.info(CONTEXT, 'Exit button clicked');
 
     _stopTimer(trainingState);
+    stopAnswerTimer();
 
     // Отправляем событие TRAINING_FINISH с phase="exit"
     eventBus.emit(EVENTS.TRAINING_FINISH, {
@@ -93,6 +95,7 @@ export function mountTrainerUI(container, context) {
   return () => {
     logger.debug(CONTEXT, 'Cleaning up equations trainer');
     _stopTimer(trainingState);
+    stopAnswerTimer();
     if (trainingState.equationView) {
       trainingState.equationView.clear();
     }
@@ -117,6 +120,23 @@ function _createLayout(t, settings) {
   const answerSection = document.createElement('div');
   answerSection.className = 'trainer-answer-section';
 
+  // Таймер ответа (видимый только если задан лимит времени)
+  const answerTimerWrap = document.createElement('div');
+  answerTimerWrap.className = 'trainer-answer-timer';
+  answerTimerWrap.style.display = 'none';
+
+  const answerTimerBar = document.createElement('div');
+  answerTimerBar.id = 'answer-timer';
+  const answerTimerBarFill = document.createElement('div');
+  answerTimerBarFill.className = 'bar';
+  answerTimerBar.appendChild(answerTimerBarFill);
+
+  const answerTimerText = document.createElement('span');
+  answerTimerText.id = 'answer-timer-text';
+  answerTimerText.className = 'answer-timer__text';
+
+  answerTimerWrap.append(answerTimerBar, answerTimerText);
+
   const answerLabel = document.createElement('label');
   answerLabel.className = 'trainer-answer-label';
   answerLabel.textContent = t('trainer.answerLabel') || 'Відповідь:';
@@ -138,7 +158,7 @@ function _createLayout(t, settings) {
   submitButton.className = 'trainer-submit-button';
   submitButton.textContent = t('trainer.submitButton') || 'Відповісти';
 
-  answerSection.append(answerLabel, input, submitButton);
+  answerSection.append(answerTimerWrap, answerLabel, input, submitButton);
   leftPanel.append(equationContainer, answerSection);
 
   // Правая панель: счётчики, прогресс, таймер
@@ -210,7 +230,8 @@ function _createLayout(t, settings) {
     incorrectCounter,
     progressBar,
     progressText,
-    timer
+    timer,
+    answerTimerWrap
   };
 }
 
@@ -240,6 +261,9 @@ function _nextExample(trainingState, layout, t, settings) {
 
   // Обновляем прогресс
   _updateProgress(layout, trainingState);
+
+  // Запускаем таймер на ответ, если задан лимит
+  _startAnswerTimerIfNeeded(trainingState, layout, t, settings);
 }
 
 /**
@@ -248,6 +272,9 @@ function _nextExample(trainingState, layout, t, settings) {
  */
 function _handleSubmit(trainingState, layout, t, settings) {
   if (trainingState.isFinished) return;
+
+  // Останавливаем таймер ответа при сабмите
+  stopAnswerTimer();
 
   const isFractions = settings?.toggles?.fractions;
   const rawValue = layout.input.value.trim().replace(',', '.');
@@ -301,6 +328,7 @@ function _finishTraining(trainingState, layout, t) {
 
   trainingState.isFinished = true;
   _stopTimer(trainingState);
+  stopAnswerTimer();
 
   logger.info(CONTEXT, 'Training finished', {
     correct: trainingState.correctCount,
@@ -435,6 +463,49 @@ function _showFeedback(layout, isCorrect, message) {
 }
 
 /**
+ * Запускает таймер на ответ, если задан лимит времени
+ * @private
+ */
+function _startAnswerTimerIfNeeded(trainingState, layout, t, settings) {
+  const timeLimit = settings?.timeLimit;
+  if (!timeLimit || timeLimit === 'none') return;
+
+  // Показываем блок таймера
+  if (layout.answerTimerWrap) {
+    layout.answerTimerWrap.style.display = 'block';
+  }
+
+  const limitSeconds = parseInt(timeLimit, 10);
+  if (!limitSeconds || limitSeconds <= 0) return;
+
+  startAnswerTimer(limitSeconds * 1000, {
+    textElementId: 'answer-timer-text',
+    barSelector: '#answer-timer .bar',
+    onExpire: () => {
+      if (trainingState.isFinished) return;
+
+      // Время вышло — считаем как неправильный ответ
+      logger.debug(CONTEXT, 'Answer timer expired');
+
+      trainingState.incorrectCount++;
+      trainingState.wrongExamples.push({
+        equation: trainingState.currentExample.text,
+        userAnswer: null,
+        correctAnswer: trainingState.currentExample.answer
+      });
+
+      _updateCounters(layout, trainingState, t);
+      trainingState.equationView.highlight(false);
+      trainingState.currentIndex++;
+
+      setTimeout(() => {
+        _nextExample(trainingState, layout, t, settings);
+      }, 1000);
+    }
+  });
+}
+
+/**
  * Внедряет стили для тренажёра
  * @private
  */
@@ -449,6 +520,23 @@ function _injectStyles() {
   }
   style.textContent = `
     ${EQUATION_STYLES}
+
+    /* Таймер ответа внутри тренажёра */
+    .trainer-answer-timer {
+      width: 60%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .trainer-answer-timer #answer-timer {
+      width: 100%;
+    }
+
+    .trainer-answer-timer .answer-timer__text {
+      text-align: center;
+    }
 
     /* Mind Abacus стиль - двухколоночный layout: СЛЕВА (пример+ввод+кнопка) СПРАВА (счетчики+прогресс) */
     .trainer-container {
