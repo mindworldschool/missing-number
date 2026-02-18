@@ -26,6 +26,7 @@ export class EquationGenerator {
     this.combineDigits = settings.combineLevels || false;
     this.fractions = settings.toggles?.fractions || false;
     this.fractionDecimals = settings.fractionDecimals || 1;
+    this.roundNumbers = settings.toggles?.round || false;
   }
 
   /**
@@ -137,22 +138,41 @@ export class EquationGenerator {
   /**
    * Генерирует одно число.
    * combineDigits=true → случайный разряд (1, 2 или 3 знака) в одном примере
+   * roundNumbers=true → круглое число (десятки/сотни/тысячи), дроби не добавляются
    * fractions=true → добавляет дробную часть с fractionDecimals знаками
    */
   _generateNumber() {
     let num;
     if (this.combineDigits) {
       const range = Math.floor(Math.random() * 3) + 1; // 1, 2 или 3 разряда
-      num = this._numberInRange(range);
+      num = this.roundNumbers
+        ? this._generateRoundNumber(range)
+        : this._numberInRange(range);
     } else {
-      num = this._numberInRange(this.digitRange);
+      num = this.roundNumbers
+        ? this._generateRoundNumber(this.digitRange)
+        : this._numberInRange(this.digitRange);
     }
-    if (this.fractions) {
+    if (this.fractions && !this.roundNumbers) {
       const factor = Math.pow(10, this.fractionDecimals);
       const decimalPart = Math.floor(Math.random() * (factor - 1)) + 1; // 1..(factor-1), избегаем .0
       num = this._round(num + decimalPart / factor);
     }
     return num;
+  }
+
+  /**
+   * Генерирует круглое число (кратное степени 10) в диапазоне разряда range.
+   *   digits=1 → десятки  (10, 20 … 90)   — однозначных «круглых» нет
+   *   digits=2 → десятки  (10, 20 … 90)
+   *   digits=3 → сотни    (100, 200 … 900)
+   *   digits=4 → тысячи   (1000, 2000 … 9000)
+   *   digits=N → 10^(N-1) × [1…9]
+   */
+  _generateRoundNumber(range) {
+    const effectiveRange = Math.max(2, range); // однозначный → двузначный
+    const multiplier = Math.pow(10, effectiveRange - 1);
+    return (Math.floor(Math.random() * 9) + 1) * multiplier;
   }
 
   /**
