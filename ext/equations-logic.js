@@ -143,7 +143,8 @@ function _createLayout(t, settings) {
 
   const input = document.createElement('input');
   const isFractions = settings?.toggles?.fractions;
-  if (isFractions) {
+  const isNegative = settings?.toggles?.negative;
+  if (isFractions || isNegative) {
     input.type = 'text';
     input.inputMode = 'decimal';
   } else {
