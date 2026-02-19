@@ -371,20 +371,6 @@ export function renderSettings(container, { t, state, updateSettings, navigate }
   unknownPositionSection.appendChild(positionList);
   form.appendChild(unknownPositionSection);
 
-  // Секция "Лимит времени на пример"
-  const timeLimitSection = createSection(t("settings.timeLimitLabel"));
-  const timeLimitOptions = t("settings.timeLimitOptions");
-  timeLimitSection.appendChild(
-    createSelect(
-      Array.isArray(timeLimitOptions) ? timeLimitOptions : [],
-      settingsState.timeLimit || 'none',
-      (value) => {
-        updateSettings({ timeLimit: value });
-      }
-    )
-  );
-  form.appendChild(timeLimitSection);
-
   const actions = document.createElement("div");
   actions.className = "form__actions";
   const submitButton = createButton({

@@ -44,8 +44,7 @@ const defaultState = {
       division: false
     },
     actionsCount: 2,
-    unknownPosition: 'random',
-    timeLimit: 'none'
+    unknownPosition: 'random'
   },
   results: {
     success: 0,
