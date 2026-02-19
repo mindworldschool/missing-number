@@ -62,16 +62,6 @@ export function renderConfirmation(container, { t, state, navigate }) {
     addConfigItem(config, t('settings.actions.label'), actionsText);
   }
 
-  // Time limit
-  if (settings.timeLimit && settings.timeLimit !== 'none') {
-    const timeLimitOptions = t('settings.timeLimitOptions');
-    const option = Array.isArray(timeLimitOptions)
-      ? timeLimitOptions.find(o => o.value === settings.timeLimit)
-      : null;
-    const timeLimitText = option ? option.label : settings.timeLimit;
-    addConfigItem(config, t('confirmation.list.timeLimit'), timeLimitText);
-  }
-
   body.appendChild(config);
 
   // Actions

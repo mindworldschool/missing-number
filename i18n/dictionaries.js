@@ -66,15 +66,6 @@ export const dictionaries = {
         "second": "Second number",
         "random": "Random"
       },
-      "timeLimitLabel": "Time limit per example",
-      "timeLimitOptions": [
-        { "value": "none", "label": "No limit" },
-        { "value": "5", "label": "5 seconds" },
-        { "value": "10", "label": "10 seconds" },
-        { "value": "15", "label": "15 seconds" },
-        { "value": "30", "label": "30 seconds" },
-        { "value": "60", "label": "1 minute" }
-      ],
       "submit": "Save settings"
     },
     "confirmation": {
@@ -84,8 +75,7 @@ export const dictionaries = {
         "digits": "Digit length",
         "combine": "Combine digit levels",
         "actions": "Numbers in equation",
-        "examples": "Number of examples",
-        "timeLimit": "Time limit"
+        "examples": "Number of examples"
       },
       "boolean": {
         "yes": "Yes",
@@ -190,15 +180,6 @@ export const dictionaries = {
         "second": "Segundo número",
         "random": "Aleatorio"
       },
-      "timeLimitLabel": "Tiempo límite por ejemplo",
-      "timeLimitOptions": [
-        { "value": "none", "label": "Sin límite" },
-        { "value": "5", "label": "5 segundos" },
-        { "value": "10", "label": "10 segundos" },
-        { "value": "15", "label": "15 segundos" },
-        { "value": "30", "label": "30 segundos" },
-        { "value": "60", "label": "1 minuto" }
-      ],
       "submit": "Guardar configuración"
     },
     "confirmation": {
@@ -208,8 +189,7 @@ export const dictionaries = {
         "digits": "Cantidad de dígitos",
         "combine": "Combinación de rangos",
         "actions": "Cantidad de números",
-        "examples": "Cantidad de ejemplos",
-        "timeLimit": "Tiempo límite"
+        "examples": "Cantidad de ejemplos"
       },
       "boolean": {
         "yes": "Sí",
@@ -314,15 +294,6 @@ export const dictionaries = {
         "second": "Второе число",
         "random": "Случайно"
       },
-      "timeLimitLabel": "Лимит времени на пример",
-      "timeLimitOptions": [
-        { "value": "none", "label": "Без лимита" },
-        { "value": "5", "label": "5 секунд" },
-        { "value": "10", "label": "10 секунд" },
-        { "value": "15", "label": "15 секунд" },
-        { "value": "30", "label": "30 секунд" },
-        { "value": "60", "label": "1 минута" }
-      ],
       "submit": "Сохранить настройки"
     },
     "confirmation": {
@@ -332,8 +303,7 @@ export const dictionaries = {
         "digits": "Разрядность",
         "combine": "Комбинирование",
         "actions": "Количество чисел",
-        "examples": "Количество примеров",
-        "timeLimit": "Лимит времени"
+        "examples": "Количество примеров"
       },
       "boolean": {
         "yes": "Да",
@@ -438,15 +408,6 @@ export const dictionaries = {
         "second": "Друге число",
         "random": "Випадково"
       },
-      "timeLimitLabel": "Ліміт часу на приклад",
-      "timeLimitOptions": [
-        { "value": "none", "label": "Без ліміту" },
-        { "value": "5", "label": "5 секунд" },
-        { "value": "10", "label": "10 секунд" },
-        { "value": "15", "label": "15 секунд" },
-        { "value": "30", "label": "30 секунд" },
-        { "value": "60", "label": "1 хвилина" }
-      ],
       "submit": "Зберегти налаштування"
     },
     "confirmation": {
@@ -456,8 +417,7 @@ export const dictionaries = {
         "digits": "Розрядність",
         "combine": "Комбінування",
         "actions": "Кількість чисел",
-        "examples": "Кількість прикладів",
-        "timeLimit": "Ліміт часу"
+        "examples": "Кількість прикладів"
       },
       "boolean": {
         "yes": "Так",
