@@ -96,5 +96,46 @@
         document.documentElement.lang = langMap[lang] || "uk";
       })();
     </script>
+
+    <!-- Основной JS -->
+    <script type="module" src="./app.js"></script>
+    <!-- В конце body, перед </body> -->
+<button id="saveAsHomework" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #ff7c00 0%, #ff9d40 100%);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 124, 0, 0.3);
+    z-index: 10000;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+">
+    💾 Сохранить как ДЗ
+</button>
+
+<script>
+document.getElementById('saveAsHomework').addEventListener('click', function() {
+    // Проверяем что открыты из LMS
+    if (window.opener) {
+        // Отправляем текущий URL с настройками
+        window.opener.postMessage({
+            type: 'TRAINER_SETTINGS_SAVED',
+            url: window.location.href,
+            trainer: 'Mind Abacus' // Название тренажера
+        }, '*');
+        
+        alert('✅ Настройки сохранены! Закрываю окно...');
+        setTimeout(() => window.close(), 1000);
+    } else {
+        alert('⚠️ Эта кнопка работает только при создании ДЗ из LMS');
+    }
+});
+</script>
   </body>
 </html>
