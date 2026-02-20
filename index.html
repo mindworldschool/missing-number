@@ -96,18 +96,5 @@
         document.documentElement.lang = langMap[lang] || "uk";
       })();
     </script>
-
-   <button id="saveAsHomeworkBtn" style="position:fixed; bottom:20px; right:20px; background:linear-gradient(135deg, #FF7C00 0%, #FF9D40 100%); color:white; padding:15px 25px; border:none; border-radius:15px; font-weight:bold; cursor:pointer; box-shadow:0 4px 15px rgba(255,124,0,0.3); z-index:99999; font-size:16px; display:none;">
-    💾 Зберегти як ДЗ
-</button>
-<script>
-if (window.opener) { document.getElementById('saveAsHomeworkBtn').style.display = 'block'; }
-document.getElementById('saveAsHomeworkBtn').addEventListener('click', function() {
-    if (window.opener) {
-        window.opener.postMessage({ type: 'TRAINER_SETTINGS_SAVED', url: window.location.href }, '*');
-        alert('✅ Налаштування збережено! Тепер закрийте це вікно.');
-    }
-});
-</script>
   </body>
 </html>
