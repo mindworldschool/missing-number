@@ -99,8 +99,11 @@
 
     <!-- Основной JS -->
     <script type="module" src="./app.js"></script>
-    <!-- В конце body, перед </body> -->
-<button id="saveAsHomework" style="
+   <!-- Кнопка збереження налаштувань (показується тільки в popup з LMS) -->
+<button id="saveAsHomework" style="display:none;">💾 Зберегти як ДЗ</button>
+
+<style>
+#saveAsHomework {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -114,28 +117,43 @@
     box-shadow: 0 4px 15px rgba(255, 124, 0, 0.3);
     z-index: 10000;
     font-size: 16px;
-    font-family: Arial, sans-serif;
-">
-    💾 Сохранить как ДЗ
-</button>
+    font-family: 'Nunito', Arial, sans-serif;
+    transition: all 0.3s ease;
+}
+
+#saveAsHomework:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 124, 0, 0.5);
+}
+
+#saveAsHomework:active {
+    transform: translateY(0);
+}
+</style>
 
 <script>
-document.getElementById('saveAsHomework').addEventListener('click', function() {
-    // Проверяем что открыты из LMS
+(function() {
+    // Показуємо кнопку ТІЛЬКИ якщо відкрито через popup з LMS
     if (window.opener) {
-        // Отправляем текущий URL с настройками
-        window.opener.postMessage({
-            type: 'TRAINER_SETTINGS_SAVED',
-            url: window.location.href,
-            trainer: 'Mind Abacus' // Название тренажера
-        }, '*');
-        
-        alert('✅ Настройки сохранены! Закрываю окно...');
-        setTimeout(() => window.close(), 1000);
-    } else {
-        alert('⚠️ Эта кнопка работает только при создании ДЗ из LMS');
+        document.getElementById('saveAsHomework').style.display = 'block';
     }
-});
+
+    // Обробник кліку
+    document.getElementById('saveAsHomework').addEventListener('click', function() {
+        if (window.opener) {
+            // Відправляємо URL назад в LMS
+            window.opener.postMessage({
+                type: 'TRAINER_SETTINGS_SAVED',
+                url: window.location.href,
+                trainer: 'Missing Number'
+            }, '*');
+            
+            alert('✅ Налаштування збережено!\n\nЗакрийте це вікно та заповніть решту полів ДЗ.');
+        } else {
+            alert('⚠️ Ця кнопка працює тільки при створенні ДЗ з LMS кабінету.');
+        }
+    });
+})();
 </script>
   </body>
 </html>
